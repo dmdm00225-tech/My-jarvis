@@ -1,117 +1,74 @@
-<title>JARVIS Mobile AI</title> <style> /* CSS Styling - Jarvis Aesthetic */ body { background-color: #050505; color: #00d4ff; font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
-    #container {
-        text-align: center;
-        width: 100%;
-    }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Jarvis AI - ChatGPT Powered</title>
+    <style>
+        body { background-color: #050505; color: #00d4ff; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
+        #arc-reactor { width: 150px; height: 150px; border-radius: 50%; border: 4px solid #00d4ff; box-shadow: 0 0 20px #00d4ff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+        .active { animation: pulse 1.2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 20px #00d4ff; } 50% { transform: scale(1.1); box-shadow: 0 0 40px #00d4ff; } 100% { transform: scale(1); box-shadow: 0 0 20px #00d4ff; } }
+        #status { margin-top: 20px; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
 
-    #arc-reactor {
-        width: 180px;
-        height: 180px;
-        border-radius: 50%;
-        border: 4px solid #00d4ff;
-        box-shadow: 0 0 25px #00d4ff, inset 0 0 25px #00d4ff;
-        margin: 0 auto;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        position: relative;
-        background: radial-gradient(circle, rgba(0,212,255,0.1) 0%, rgba(0,0,0,1) 70%);
-    }
-
-    .active {
-        animation: pulse 1.2s infinite;
-    }
-
-    @keyframes pulse {
-        0% { transform: scale(1); box-shadow: 0 0 25px #00d4ff; }
-        50% { transform: scale(1.1); box-shadow: 0 0 60px #00d4ff; }
-        100% { transform: scale(1); box-shadow: 0 0 25px #00d4ff; }
-    }
-
-    h1 { font-size: 1.5rem; letter-spacing: 5px; margin-top: 30px; }
-    #status { color: #888; font-size: 0.9rem; margin-bottom: 20px; }
-    #transcript { 
-        color: white; 
-        margin-top: 20px; 
-        min-height: 50px; 
-        padding: 0 20px;
-        font-size: 1.1rem;
-    }
-</style>
-<div id="container">
-    <div id="arc-reactor" onclick="startJarvis()">
-        <span>POWER ON</span>
+    <div id="arc-reactor" onclick="startListening()">
+        <div style="width: 60px; height: 60px; border-radius: 50%; border: 2px solid #00d4ff;"></div>
     </div>
-    <h1>JARVIS</h1>
-    <div id="status">STANDING BY</div>
-    <div id="transcript">Tap the reactor to speak...</div>
-</div>
+    <div id="status">Tap to Speak</div>
 
-<script>
-    // JavaScript - The Brain
-    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-    const synth = window.speechSynthesis;
-    
-    const reactor = document.getElementById('arc-reactor');
-    const statusText = document.getElementById('status');
-    const transcriptText = document.getElementById('transcript');
+    <script>
+        const status = document.getElementById('status');
+        const reactor = document.getElementById('arc-reactor');
 
-    recognition.lang = 'en-US';
-    recognition.interimResults = false;
+        // --- APLE KEY YETHE TAKA ---
+        const API_KEY = "YOUR_OPENAI_API_KEY_HERE"; 
 
-    function startJarvis() {
-        recognition.start();
-        reactor.classList.add('active');
-        statusText.innerText = "LISTENING...";
-    }
-
-    recognition.onresult = (event) => {
-        const command = event.results[0][0].transcript.toLowerCase();
-        transcriptText.innerText = `You said: "${command}"`;
-        handleCommand(command);
-    };
-
-    recognition.onend = () => {
-        reactor.classList.remove('active');
-        statusText.innerText = "STANDING BY";
-    };
-
-    function speak(text) {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 1.0;
-        utterance.pitch = 0.9;
-        
-        // Jarvis-like voice selection (optional)
-        const voices = synth.getVoices();
-        if (voices.length > 0) {
-            // Try to find a male voice for Jarvis effect
-            utterance.voice = voices.find(v => v.name.includes('Google US English Male')) || voices[0];
+        async function getChatGPTResponse(prompt) {
+            status.innerText = "Thinking...";
+            try {
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-3.5-turbo",
+                        messages: [{role: "user", content: prompt}]
+                    })
+                });
+                const data = await response.json();
+                return data.choices[0].message.content;
+            } catch (error) {
+                return "Sorry Dhiraj, I am having trouble connecting to my brain.";
+            }
         }
-        
-        synth.speak(utterance);
-    }
 
-    function handleCommand(cmd) {
-        if (cmd.includes('hello') || cmd.includes('jarvis')) {
-            speak("Hello! Systems are online. How can I assist you today?");
-        } else if (cmd.includes('time')) {
-            const now = new Date();
-            speak(`It is currently ${now.getHours()} ${now.getMinutes()}`);
-        } else if (cmd.includes('date')) {
-            speak(`Today is ${new Date().toDateString()}`);
-        } else if (cmd.includes('who are you')) {
-            speak("I am JARVIS, your personal digital assistant.");
-        } else if (cmd.includes('clear')) {
-            transcriptText.innerText = "";
-            speak("Screen cleared.");
-        } else {
-            speak("Command received, but I don't have instructions for that yet.");
+        function speak(text) {
+            const uttr = new SpeechSynthesisUtterance(text);
+            window.speechSynthesis.speak(uttr);
         }
-    }
 
-    // Fix for mobile voice load
-    window.speechSynthesis.onvoiceschanged = () => {
-        console.log("Voices loaded");
-    };
-</script>
+        function startListening() {
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.onstart = () => {
+                status.innerText = "Listening...";
+                reactor.classList.add('active');
+            };
+            recognition.onresult = async (event) => {
+                const command = event.results[0][0].transcript;
+                status.innerText = "You said: " + command;
+                
+                // ChatGPT kadun uttar ghene
+                const aiResponse = await getChatGPTResponse(command);
+                status.innerText = "Jarvis: " + aiResponse;
+                speak(aiResponse);
+                reactor.classList.remove('active');
+            };
+            recognition.start();
+        }
+    </script>
+</body>
+</html>
