@@ -1,3 +1,86 @@
+import openai
+import time
+import random
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.by import By
+
+# १. तुझा 'Brain' सेट करणे (AI Identity)
+openai.api_key = "तुझी_API_KEY_इथे_टाक"
+
+DHIRAJ_SKILLS = """
+तू धुराजचा वैयक्तिक AI सहाय्यक आहेस. धुराज कडे खालील १३ स्किल्स आहेत:
+१. पायथन ऑटोमेशन २. वेब स्क्रॅपिंग ३. एआय बॉट मेकिंग ४. व्हिडिओ एडिटिंग (CapCut/VN) 
+५. डेटा एन्ट्री ६. यूट्यूब एसईओ ७. थंबनेल डिझाइन ८. चॅटबॉट डेव्हलपमेंट 
+९. पायथन स्क्रिप्ट फिक्सिंग १०. लोगो डिझाइन ११. इंस्टाग्राम ऑटोमेशन 
+१२. एक्सेल मॅक्रो १३. बॅकलिंक जनरेशन.
+क्लायंटला धुराजच्या वतीने प्रोफेशनल उत्तर दे.
+"""
+
+def ask_ai_expert(client_message):
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4o", # सर्वात शक्तिशाली मॉडेल
+            messages=[
+                {"role": "system", "content": DHIRAJ_SKILLS},
+                {"role": "user", "content": f"क्लायंट म्हणतोय: '{client_message}'. याला एक किलर रिप्लाय दे जो ऑर्डर कन्फर्म करेल."}
+            ],
+            temperature=0.7 # थोडं क्रिएटिव्ह उत्तर देण्यासाठी
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return "Hi! I am interested. Let's discuss this."
+
+# २. ब्राउझर लॉजिक (Real Automation)
+def run_master_bot():
+    options = webdriver.ChromeOptions()
+    # तुझ्या ओरिजिनल क्रोम प्रोफाइलचा वापर करा जेणेकरून लॉगिनची कटकट नको
+    # options.add_argument(f"user-data-dir=C:\\Users\\{Your_PC_Name}\\AppData\\Local\\Google\\Chrome\\User Data")
+    
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    
+    while True:
+        try:
+            driver.get("https://www.fiverr.com/inbox")
+            time.sleep(10) # इंटरनेट स्लो असेल तर वेळ दे
+
+            # नवीन मेसेज शोधण्याची पद्धत (Fiverr चे Specific Elements)
+            unread_elements = driver.find_elements(By.CSS_SELECTOR, ".unread-message-class") # क्लास नेम बदलावा लागू शकतो
+
+            for msg in unread_elements:
+                msg.click()
+                time.sleep(3)
+                
+                # शेवटचा मेसेज वाचणे
+                chat_history = driver.find_elements(By.CLASS_NAME, "msg-body")
+                last_msg = chat_history[-1].text
+                print(f"मेसेज आलाय: {last_msg}")
+
+                # AI कडून उत्तर मागवणे
+                final_reply = ask_ai_expert(last_msg)
+
+                # टाईपिंग सिमुलेशन (Real Human Style)
+                input_area = driver.find_element(By.TAG_NAME, "textarea")
+                for letter in final_reply:
+                    input_area.send_keys(letter)
+                    time.sleep(random.uniform(0.05, 0.2)) # कधी फास्ट, कधी स्लो
+
+                # ५-१० सेकंद थांबून सेंड करणे
+                time.sleep(random.randint(5, 10))
+                # driver.find_element(By.ID, "send-btn").click() 
+                print("AI ने उत्तर पाठवलंय!")
+
+        except Exception as e:
+            print(f"बॉट चालू आहे, पण काही अडचण आली: {e}")
+        
+        # रँडम विश्रांती (Anti-Ban System)
+        wait = random.randint(300, 900)
+        print(f"पुढची तपासणी {wait/60} मिनिटांनी...")
+        time.sleep(wait)
+
+if __name__ == "__main__":
+    run_master_bot()
 <!DOCTYPE html>
 <html lang="en">
 <head>
