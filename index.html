@@ -1,157 +1,132 @@
-import openai
-import time
-import random
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.common.by import By
-
-# १. तुझा 'Brain' सेट करणे (AI Identity)
-openai.api_key = "तुझी_API_KEY_इथे_टाक"
-
-DHIRAJ_SKILLS = """
-तू धुराजचा वैयक्तिक AI सहाय्यक आहेस. धुराज कडे खालील १३ स्किल्स आहेत:
-१. पायथन ऑटोमेशन २. वेब स्क्रॅपिंग ३. एआय बॉट मेकिंग ४. व्हिडिओ एडिटिंग (CapCut/VN) 
-५. डेटा एन्ट्री ६. यूट्यूब एसईओ ७. थंबनेल डिझाइन ८. चॅटबॉट डेव्हलपमेंट 
-९. पायथन स्क्रिप्ट फिक्सिंग १०. लोगो डिझाइन ११. इंस्टाग्राम ऑटोमेशन 
-१२. एक्सेल मॅक्रो १३. बॅकलिंक जनरेशन.
-क्लायंटला धुराजच्या वतीने प्रोफेशनल उत्तर दे.
-"""
-
-def ask_ai_expert(client_message):
-    try:
-        response = openai.ChatCompletion.create(
-            model="gpt-4o", # सर्वात शक्तिशाली मॉडेल
-            messages=[
-                {"role": "system", "content": DHIRAJ_SKILLS},
-                {"role": "user", "content": f"क्लायंट म्हणतोय: '{client_message}'. याला एक किलर रिप्लाय दे जो ऑर्डर कन्फर्म करेल."}
-            ],
-            temperature=0.7 # थोडं क्रिएटिव्ह उत्तर देण्यासाठी
-        )
-        return response.choices[0].message.content
-    except Exception as e:
-        return "Hi! I am interested. Let's discuss this."
-
-# २. ब्राउझर लॉजिक (Real Automation)
-def run_master_bot():
-    options = webdriver.ChromeOptions()
-    # तुझ्या ओरिजिनल क्रोम प्रोफाइलचा वापर करा जेणेकरून लॉगिनची कटकट नको
-    # options.add_argument(f"user-data-dir=C:\\Users\\{Your_PC_Name}\\AppData\\Local\\Google\\Chrome\\User Data")
-    
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-    
-    while True:
-        try:
-            driver.get("https://www.fiverr.com/inbox")
-            time.sleep(10) # इंटरनेट स्लो असेल तर वेळ दे
-
-            # नवीन मेसेज शोधण्याची पद्धत (Fiverr चे Specific Elements)
-            unread_elements = driver.find_elements(By.CSS_SELECTOR, ".unread-message-class") # क्लास नेम बदलावा लागू शकतो
-
-            for msg in unread_elements:
-                msg.click()
-                time.sleep(3)
-                
-                # शेवटचा मेसेज वाचणे
-                chat_history = driver.find_elements(By.CLASS_NAME, "msg-body")
-                last_msg = chat_history[-1].text
-                print(f"मेसेज आलाय: {last_msg}")
-
-                # AI कडून उत्तर मागवणे
-                final_reply = ask_ai_expert(last_msg)
-
-                # टाईपिंग सिमुलेशन (Real Human Style)
-                input_area = driver.find_element(By.TAG_NAME, "textarea")
-                for letter in final_reply:
-                    input_area.send_keys(letter)
-                    time.sleep(random.uniform(0.05, 0.2)) # कधी फास्ट, कधी स्लो
-
-                # ५-१० सेकंद थांबून सेंड करणे
-                time.sleep(random.randint(5, 10))
-                # driver.find_element(By.ID, "send-btn").click() 
-                print("AI ने उत्तर पाठवलंय!")
-
-        except Exception as e:
-            print(f"बॉट चालू आहे, पण काही अडचण आली: {e}")
-        
-        # रँडम विश्रांती (Anti-Ban System)
-        wait = random.randint(300, 900)
-        print(f"पुढची तपासणी {wait/60} मिनिटांनी...")
-        time.sleep(wait)
-
-if __name__ == "__main__":
-    run_master_bot()
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Jarvis AI - ChatGPT Powered</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS EXTREME - MASTER DHIRAJ</title>
     <style>
-        body { background-color: #050505; color: #00d4ff; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
-        #arc-reactor { width: 150px; height: 150px; border-radius: 50%; border: 4px solid #00d4ff; box-shadow: 0 0 20px #00d4ff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
-        .active { animation: pulse 1.2s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 20px #00d4ff; } 50% { transform: scale(1.1); box-shadow: 0 0 40px #00d4ff; } 100% { transform: scale(1); box-shadow: 0 0 20px #00d4ff; } }
-        #status { margin-top: 20px; font-size: 1.2rem; }
+        :root { --main-color: #00d4ff; --bg-color: #020202; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: var(--bg-color); color: var(--main-color); font-family: 'Orbitron', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+
+        /* Scanning HUD Effect */
+        .hud-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; border: 10px solid rgba(0, 212, 255, 0.1); pointer-events: none; }
+        
+        /* The Big Arc Reactor */
+        .reactor-container { position: relative; width: 350px; height: 350px; display: flex; align-items: center; justify-content: center; }
+        
+        .core { width: 100px; height: 100px; border-radius: 50%; background: radial-gradient(circle, #fff, var(--main-color)); box-shadow: 0 0 40px var(--main-color), 0 0 100px var(--main-color); z-index: 10; cursor: pointer; }
+        
+        .ring-box { position: absolute; border: 2px solid var(--main-color); border-radius: 50%; opacity: 0.6; }
+        .r1 { width: 160px; height: 160px; border-top: 4px solid var(--main-color); animation: spin 2s linear infinite; }
+        .r2 { width: 220px; height: 220px; border-left: 4px solid var(--main-color); animation: spin-rev 4s linear infinite; }
+        .r3 { width: 280px; height: 280px; border-right: 4px solid var(--main-color); border-bottom: 4px solid var(--main-color); animation: spin 8s linear infinite; }
+        .r4 { width: 340px; height: 340px; border: 1px dashed var(--main-color); animation: spin-rev 12s linear infinite; }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes spin-rev { 100% { transform: rotate(-360deg); } }
+        
+        /* Status Text */
+        .info-panel { margin-top: 50px; text-align: center; width: 90%; }
+        #cmd-display { font-size: 1.8rem; letter-spacing: 3px; font-weight: bold; text-shadow: 0 0 15px var(--main-color); }
+        #log-display { color: #fff; margin-top: 10px; font-size: 0.9rem; opacity: 0.7; font-family: monospace; }
+        
+        .active-core { animation: core-pulse 0.5s infinite alternate; }
+        @keyframes core-pulse { from { transform: scale(1); opacity: 1; } to { transform: scale(1.1); opacity: 0.8; } }
+
+        .scanline { width: 100%; height: 2px; background: rgba(0, 212, 255, 0.2); position: absolute; top: 0; animation: scan 3s linear infinite; }
+        @keyframes scan { 100% { top: 100%; } }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div class="hud-overlay"></div>
+    <div class="scanline"></div>
 
-    <div id="arc-reactor" onclick="startListening()">
-        <div style="width: 60px; height: 60px; border-radius: 50%; border: 2px solid #00d4ff;"></div>
+    <div class="reactor-container">
+        <div class="ring-box r1"></div>
+        <div class="ring-box r2"></div>
+        <div class="ring-box r3"></div>
+        <div class="ring-box r4"></div>
+        <div id="core-btn" class="core" onclick="initiateJarvis()"></div>
     </div>
-    <div id="status">Tap to Speak</div>
+
+    <div class="info-panel">
+        <div id="cmd-display">SYSTEM IDLE</div>
+        <div id="log-display">Awaiting Master Dhiraj's voice command...</div>
+    </div>
 
     <script>
-        const status = document.getElementById('status');
-        const reactor = document.getElementById('arc-reactor');
+        const cmdDisplay = document.getElementById('cmd-display');
+        const logDisplay = document.getElementById('log-display');
+        const core = document.getElementById('core-btn');
 
-        // --- APLE KEY YETHE TAKA ---
-        const API_KEY = "YOUR_OPENAI_API_KEY_HERE"; 
+        function speak(text) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.pitch = 0.85; // Deep AI Voice
+            utterance.rate = 1.0;
+            window.speechSynthesis.speak(utterance);
+        }
 
-        async function getChatGPTResponse(prompt) {
-            status.innerText = "Thinking...";
-            try {
-                const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${API_KEY}`
-                    },
-                    body: JSON.stringify({
-                        model: "gpt-3.5-turbo",
-                        messages: [{role: "user", content: prompt}]
-                    })
-                });
-                const data = await response.json();
-                return data.choices[0].message.content;
-            } catch (error) {
-                return "Sorry Dhiraj, I am having trouble connecting to my brain.";
+        function initiateJarvis() {
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'en-US';
+
+            recognition.onstart = () => {
+                cmdDisplay.innerText = "LISTENING...";
+                logDisplay.innerText = "Sensors active. Receiving audio data...";
+                core.classList.add('active-core');
+            };
+
+            recognition.onresult = (event) => {
+                const speech = event.results[0][0].transcript.toLowerCase();
+                logDisplay.innerText = "Input: " + speech;
+                handleLogic(speech);
+            };
+
+            recognition.onend = () => {
+                core.classList.remove('active-core');
+                if(cmdDisplay.innerText === "LISTENING...") cmdDisplay.innerText = "SYSTEM ONLINE";
+            };
+
+            recognition.start();
+        }
+
+        function handleLogic(msg) {
+            cmdDisplay.innerText = "PROCESSING...";
+            
+            if (msg.includes('hello') || msg.includes('jarvis')) {
+                speak("Hello Master Dhiraj. All systems are green. I am ready for your instructions.");
+            }
+            else if (msg.includes('time')) {
+                speak("The current time is " + new Date().toLocaleTimeString());
+            }
+            else if (msg.includes('open youtube')) {
+                speak("Accessing YouTube. Enjoy your videos, Master.");
+                window.open("https://www.youtube.com", "_blank");
+            }
+            else if (msg.includes('open google')) {
+                speak("Opening Google search engine.");
+                window.open("https://www.google.com", "_blank");
+            }
+            else if (msg.includes('shutdown') || msg.includes('sleep')) {
+                speak("Understood. System going to standby mode. Goodbye Master Dhiraj.");
+                cmdDisplay.innerText = "SYSTEM SLEEP";
+            }
+            else {
+                speak("Master, I am searching the global network for " + msg);
+                window.open(`https://www.google.com/search?q=${msg}`, "_blank");
             }
         }
 
-        function speak(text) {
-            const uttr = new SpeechSynthesisUtterance(text);
-            window.speechSynthesis.speak(uttr);
-        }
-
-        function startListening() {
-            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            recognition.onstart = () => {
-                status.innerText = "Listening...";
-                reactor.classList.add('active');
-            };
-            recognition.onresult = async (event) => {
-                const command = event.results[0][0].transcript;
-                status.innerText = "You said: " + command;
-                
-                // ChatGPT kadun uttar ghene
-                const aiResponse = await getChatGPTResponse(command);
-                status.innerText = "Jarvis: " + aiResponse;
-                speak(aiResponse);
-                reactor.classList.remove('active');
-            };
-            recognition.start();
-        }
+        // Initial Greeting
+        window.onload = () => {
+            setTimeout(() => {
+                speak("System online. Welcome back, Master Dhiraj.");
+            }, 1000);
+        };
     </script>
 </body>
 </html>
+
