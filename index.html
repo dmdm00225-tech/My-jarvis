@@ -2,6 +2,525 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>JARVIS - Voice Assistant Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: radial-gradient(circle at 30% 20%, #0a0f1e, #020408);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+        }
+
+        .assistant-container {
+            max-width: 500px;
+            width: 100%;
+            background: rgba(8, 16, 26, 0.75);
+            backdrop-filter: blur(16px);
+            border-radius: 48px;
+            border: 1px solid rgba(42, 212, 255, 0.3);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            overflow: hidden;
+        }
+
+        .jarvis-header {
+            padding: 20px 22px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(42, 212, 255, 0.2);
+        }
+
+        .jarvis {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #e0f3ff, #2ad4ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .status-led {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0,0,0,0.5);
+            padding: 5px 12px;
+            border-radius: 40px;
+        }
+
+        .led {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #2ad4ff;
+            transition: 0.1s;
+        }
+
+        .led.active {
+            background-color: #ffcc44;
+            box-shadow: 0 0 10px #ffcc44;
+            animation: pulse 0.8s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.4; transform: scale(0.8);}
+            100% { opacity: 1; transform: scale(1.2);}
+        }
+
+        .wake-badge {
+            background: #0a2a35;
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 0.65rem;
+            color: #2ad4ff;
+            font-weight: 600;
+        }
+
+        .visualizer-area {
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .arc {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #0a2b38, #01070a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(42,212,255,0.3);
+            transition: 0.1s;
+        }
+
+        .arc-core {
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, #8affff, #2ad4ff);
+            border-radius: 50%;
+        }
+
+        .conversation {
+            background: rgba(0, 0, 0, 0.4);
+            margin: 10px 16px;
+            border-radius: 28px;
+            padding: 14px;
+            min-height: 180px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 12px;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .user-msg { text-align: right; }
+        .jarvis-msg { text-align: left; }
+
+        .msg-bubble {
+            display: inline-block;
+            max-width: 85%;
+            padding: 8px 14px;
+            border-radius: 22px;
+            font-size: 0.85rem;
+            background: rgba(30, 40, 55, 0.9);
+            color: #eef5ff;
+        }
+
+        .user-msg .msg-bubble {
+            background: linear-gradient(135deg, #0b5e7c, #0a3b4f);
+        }
+
+        .jarvis-msg .msg-bubble {
+            border-left: 2px solid #2ad4ff;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        .controls {
+            padding: 12px 18px 20px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .voice-btn {
+            background: #0e1a24;
+            border: 1px solid #2ad4ff;
+            width: 60px;
+            height: 60px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+
+        .voice-btn:active { transform: scale(0.92); }
+
+        .text-input {
+            flex: 1;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid #2ad4ff66;
+            border-radius: 50px;
+            padding: 12px 18px;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .send-btn {
+            background: #0e2a34;
+            border: 1px solid #2ad4ff;
+            width: 50px;
+            height: 50px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 0.6rem;
+            color: #2e6d8a;
+            padding: 0 16px 18px;
+        }
+    </style>
+</head>
+<body>
+<div class="assistant-container">
+    <div class="jarvis-header">
+        <span class="jarvis">J.A.R.V.I.S</span>
+        <div class="status-led">
+            <div class="led" id="ledIndicator"></div>
+            <span id="statusText">READY</span>
+        </div>
+    </div>
+    <div style="text-align: center; margin-top: 6px;"><span class="wake-badge">🎙️ WAKE WORD: "HEY JARVIS"</span></div>
+
+    <div class="visualizer-area">
+        <div class="arc" id="arcReactor">
+            <div class="arc-core"></div>
+        </div>
+    </div>
+
+    <div class="conversation" id="chatBox">
+        <div class="message jarvis-msg">
+            <div class="msg-bubble">Sir, I'm online. Say <strong>"Hey JARVIS"</strong> then your command. Example: "Hey JARVIS, open YouTube"</div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <div class="voice-btn" id="micBtn">🎙️</div>
+        <input type="text" id="cmdInput" class="text-input" placeholder="Type command...">
+        <button class="send-btn" id="sendBtn">➤</button>
+    </div>
+    <div class="footer">⚡ Direct app actions: open YouTube, Google, WhatsApp, Instagram, Chrome</div>
+</div>
+
+<script>
+    // ----- DOM elements -----
+    const chatBox = document.getElementById('chatBox');
+    const micBtn = document.getElementById('micBtn');
+    const cmdInput = document.getElementById('cmdInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const ledIndicator = document.getElementById('ledIndicator');
+    const statusText = document.getElementById('statusText');
+    const arcReactor = document.getElementById('arcReactor');
+
+    // ----- voice & speech -----
+    let recognition = null;
+    let isListening = false;
+    let wakeWordActive = false;     // "hey jarvis" said, now waiting for command
+    let synth = window.speechSynthesis;
+    let currentUtterance = null;
+
+    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const isRecognitionSupported = SpeechRecognitionAPI !== undefined;
+
+    // Helper: update UI
+    function setUIState(state, isMicActive = false) {
+        if (state === 'listening') {
+            ledIndicator.classList.add('active');
+            statusText.innerText = '🎙️ LISTENING...';
+            if (arcReactor) arcReactor.style.boxShadow = '0 0 20px #ffaa44';
+            micBtn.style.borderColor = '#ffaa44';
+        } else if (state === 'wake') {
+            ledIndicator.classList.add('active');
+            statusText.innerText = '🔊 SAY COMMAND...';
+            micBtn.style.borderColor = '#ffaa44';
+        } else {
+            ledIndicator.classList.remove('active');
+            statusText.innerText = state === 'ready' ? 'READY' : 'PROCESSING';
+            micBtn.style.borderColor = '#2ad4ff';
+            if (arcReactor) arcReactor.style.boxShadow = '0 0 10px rgba(42,212,255,0.3)';
+        }
+        if (isMicActive) micBtn.style.opacity = '1';
+    }
+
+    function addMessage(sender, text) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${sender === 'user' ? 'user-msg' : 'jarvis-msg'}`;
+        msgDiv.innerHTML = `<div class="msg-bubble">${escapeHtml(text)}</div>`;
+        chatBox.appendChild(msgDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+        if (chatBox.children.length > 15) chatBox.removeChild(chatBox.children[0]);
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function speak(text, callback) {
+        if (!synth) { if(callback)callback(); return; }
+        if (currentUtterance) synth.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.95;
+        utterance.onend = () => { currentUtterance = null; if(callback)callback(); };
+        utterance.onerror = () => { currentUtterance = null; if(callback)callback(); };
+        currentUtterance = utterance;
+        synth.speak(utterance);
+    }
+
+    // ********** DIRECT APP LAUNCH ON MOBILE **********
+    function launchApp(appName) {
+        let intentUrl = '';
+        const lowerApp = appName.toLowerCase();
+        
+        if (lowerApp.includes('youtube')) {
+            intentUrl = 'https://www.youtube.com/';
+            addMessage('jarvis', 'Opening YouTube, sir.');
+            window.location.href = intentUrl;
+            return true;
+        } else if (lowerApp.includes('google')) {
+            intentUrl = 'https://www.google.com/';
+            addMessage('jarvis', 'Opening Google search.');
+            window.location.href = intentUrl;
+            return true;
+        } else if (lowerApp.includes('whatsapp')) {
+            // try to open whatsapp directly
+            window.location.href = 'https://wa.me/';
+            setTimeout(() => { window.location.href = 'https://web.whatsapp.com/'; }, 200);
+            addMessage('jarvis', 'Launching WhatsApp.');
+            return true;
+        } else if (lowerApp.includes('instagram')) {
+            window.location.href = 'https://www.instagram.com/';
+            addMessage('jarvis', 'Opening Instagram.');
+            return true;
+        } else if (lowerApp.includes('chrome') || lowerApp.includes('browser')) {
+            window.location.href = 'https://www.google.com';
+            addMessage('jarvis', 'Opening browser.');
+            return true;
+        } else if (lowerApp.includes('camera')) {
+            addMessage('jarvis', 'Camera access requires permissions, sir. Opening default gallery app maybe.');
+            // try camera intent
+            window.location.href = 'intent://camera#Intent;scheme=android;action=android.media.action.IMAGE_CAPTURE;end';
+            return true;
+        }
+        return false;
+    }
+
+    // ********** JARVIS INTELLIGENCE **********
+    function processCommand(commandRaw) {
+        let command = commandRaw.trim().toLowerCase();
+        if (command === "") return;
+        
+        addMessage('user', commandRaw);
+        setUIState('processing');
+        
+        setTimeout(() => {
+            let response = "";
+            let actionDone = false;
+            
+            // 1. Check for OPEN APP commands (direct)
+            if (command.includes('open ') || command.includes('launch ') || command.includes('start ')) {
+                let appName = command.replace(/open|launch|start/gi, '').trim();
+                if (launchApp(appName)) {
+                    response = `Opening ${appName} for you, sir.`;
+                    actionDone = true;
+                } else {
+                    response = `I couldn't find ${appName} app, sir. Try YouTube, Google, WhatsApp, or Instagram.`;
+                }
+            }
+            // 2. Wake word detection already done, but also support direct commands without wake word
+            else if (command.includes('time')) {
+                const now = new Date();
+                response = `The time is ${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}, sir.`;
+            }
+            else if (command.includes('date')) {
+                const now = new Date();
+                response = `Today is ${now.toLocaleDateString()}, sir.`;
+            }
+            else if (command.includes('joke')) {
+                const jokes = ["Why don't scientists trust atoms? Because they make up everything!","What do you call a fake noodle? An impasta.","I told my computer I needed a break, now it won't stop sending vacation ads."];
+                response = jokes[Math.floor(Math.random() * jokes.length)];
+            }
+            else if (command.includes('search') || command.includes('google')) {
+                let query = command.replace(/search|google/gi, '').trim();
+                if (query) {
+                    response = `Searching for ${query}, sir.`;
+                    setTimeout(() => { window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank'); }, 300);
+                } else response = "What should I search for?";
+            }
+            else if (command.includes('weather')) {
+                response = "According to sensors, it's pleasant outside. Around 22°C with clear skies, sir.";
+            }
+            else if (command.includes('hello') || command.includes('hey') || command.includes('hi jarvis')) {
+                response = "Hello sir, ready for your command.";
+            }
+            else if (command.includes('stop') || command.includes('shut up')) {
+                if (currentUtterance) synth.cancel();
+                response = "As you wish, sir.";
+            }
+            else {
+                response = "Sir, I can open apps (YouTube, Google, WhatsApp, Instagram), tell time/date, tell jokes, search web, or give weather. Try 'open YouTube'.";
+            }
+            
+            if (!actionDone) addMessage('jarvis', response);
+            speak(response, () => { setUIState('ready'); });
+            setUIState('ready');
+        }, 80);
+    }
+
+    // ********** VOICE RECOGNITION WITH WAKE WORD **********
+    if (isRecognitionSupported) {
+        recognition = new SpeechRecognitionAPI();
+        recognition.continuous = true;   // keep listening for wake word + command
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+
+        recognition.onstart = () => {
+            isListening = true;
+            setUIState('listening');
+            addMessage('jarvis', 'Voice active... Say "Hey JARVIS"');
+        };
+
+        recognition.onresult = (event) => {
+            let fullTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                fullTranscript += event.results[i][0].transcript.toLowerCase();
+            }
+            
+            // WAKE WORD DETECTION
+            if (!wakeWordActive && (fullTranscript.includes('hey jarvis') || fullTranscript.includes('hey jarvis'))) {
+                wakeWordActive = true;
+                setUIState('wake');
+                addMessage('jarvis', 'I\'m listening... say your command.');
+                speak("Yes sir, go ahead.", () => {});
+                // reset after 5 seconds if no command
+                setTimeout(() => { if (wakeWordActive) { wakeWordActive = false; setUIState('ready'); addMessage('jarvis', 'Wake word timeout, sir.'); } }, 6000);
+                return;
+            }
+            
+            // If wake word active, take the last spoken part as command
+            if (wakeWordActive && fullTranscript.length > 0) {
+                // remove "hey jarvis" from transcript
+                let commandPart = fullTranscript.replace(/hey jarvis/gi, '').trim();
+                if (commandPart.length > 2) {
+                    wakeWordActive = false;
+                    recognition.stop();  // stop to process command cleanly
+                    processCommand(commandPart);
+                    setTimeout(() => {
+                        if (recognition && !isListening) recognition.start();
+                    }, 1500);
+                }
+            }
+        };
+
+        recognition.onerror = (e) => {
+            console.warn(e.error);
+            if (e.error === 'no-speech') {
+                // ignore
+            } else {
+                addMessage('jarvis', 'Voice error. Please tap mic or type.');
+            }
+            isListening = false;
+            wakeWordActive = false;
+            setUIState('ready');
+        };
+
+        recognition.onend = () => {
+            isListening = false;
+            if (wakeWordActive) wakeWordActive = false;
+            setUIState('ready');
+            // auto restart after a short pause for continuous listening
+            setTimeout(() => {
+                if (!isListening && document.hasFocus()) {
+                    try { recognition.start(); } catch(e) {}
+                }
+            }, 800);
+        };
+    }
+
+    // Manual mic button toggle (start voice)
+    function startVoice() {
+        if (!isRecognitionSupported) {
+            addMessage('jarvis', 'Voice not supported in this browser.');
+            return;
+        }
+        if (recognition) {
+            try {
+                recognition.stop();
+                setTimeout(() => recognition.start(), 100);
+            } catch(e) { recognition.start(); }
+        }
+    }
+
+    // manual text command
+    function sendTextCommand() {
+        let txt = cmdInput.value.trim();
+        if (txt === "") return;
+        cmdInput.value = "";
+        processCommand(txt);
+    }
+
+    // Event listeners
+    micBtn.addEventListener('click', startVoice);
+    sendBtn.addEventListener('click', sendTextCommand);
+    cmdInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendTextCommand(); });
+
+    // Auto-start continuous listening for better wake word
+    window.addEventListener('load', () => {
+        if (isRecognitionSupported && recognition) {
+            setTimeout(() => {
+                recognition.start();
+                addMessage('jarvis', '✅ Wake word "Hey JARVIS" active. Try: "Hey JARVIS, open YouTube"');
+            }, 500);
+        } else {
+            addMessage('jarvis', '⚠️ Voice requires Chrome/Edge/Safari. Use text typing.');
+        }
+    });
+
+    setUIState('ready');
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JARVIS EXTREME - MASTER SUSHANT</title>
     <style>
