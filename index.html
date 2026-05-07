@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-    <title>JARVIS - आवाज सहाय्यक | Voice Assistant</title>
+    <title>JARVIS – Voice Assistant | All Apps + Push-to-Talk</title>
     <style>
         * {
             margin: 0;
@@ -13,8 +13,8 @@
         }
 
         body {
-            background: #f5f7fc;
-            font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, 'Inter', sans-serif;
+            background: #f5f7fb;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -22,114 +22,82 @@
             padding: 16px;
         }
 
-        /* Light theme card */
+        /* main card */
         .jarvis-card {
-            max-width: 550px;
+            max-width: 560px;
             width: 100%;
             background: #ffffff;
             border-radius: 48px;
-            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.02);
+            box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.02);
             overflow: hidden;
-            transition: all 0.2s ease;
+            transition: 0.2s;
         }
 
-        /* Header */
-        .jarvis-header {
-            padding: 24px 24px 12px 24px;
+        /* header */
+        .header {
+            padding: 22px 24px 12px;
             display: flex;
             align-items: baseline;
             justify-content: space-between;
-            border-bottom: 1px solid #e9ecef;
-            background: #ffffff;
+            border-bottom: 1px solid #eef2f8;
         }
-        .title-group {
-            display: flex;
-            align-items: baseline;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .jarvis {
+        .title {
             font-size: 1.9rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #1a2a3a, #2c3e50);
+            background: linear-gradient(135deg, #1e293b, #0f172a);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            letter-spacing: -0.3px;
         }
         .badge {
-            font-size: 0.7rem;
-            background: #eef2f9;
-            padding: 4px 12px;
+            background: #eef2ff;
+            padding: 5px 12px;
             border-radius: 60px;
-            color: #2c3e50;
-            font-weight: 500;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #1f2a44;
         }
-        .status-area {
+        .status-led {
             display: flex;
             align-items: center;
             gap: 10px;
-            background: #f1f3f7;
+            background: #f1f5f9;
             padding: 6px 14px;
-            border-radius: 50px;
+            border-radius: 32px;
         }
-        .wake-dot {
+        .led {
             width: 10px;
             height: 10px;
             border-radius: 50%;
-            background-color: #27ae60;
+            background: #94a3b8;
             transition: 0.2s;
         }
-        .wake-dot.active {
-            background-color: #f39c12;
-            box-shadow: 0 0 6px #f39c12;
-            animation: softPulse 1.2s infinite;
+        .led.active {
+            background: #f97316;
+            box-shadow: 0 0 8px #f97316;
+            animation: pulse 1s infinite;
         }
-        @keyframes softPulse {
-            0% { opacity: 0.5; transform: scale(0.8);}
+        @keyframes pulse {
+            0% { opacity: 0.4; transform: scale(0.8);}
             100% { opacity: 1; transform: scale(1.2);}
         }
         .status-text {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 600;
-            color: #2c3e50;
+            color: #334155;
         }
 
-        /* Visual arc (light version) */
-        .visualizer {
-            padding: 20px 20px 10px;
-            display: flex;
-            justify-content: center;
-        }
-        .arc-light {
-            width: 85px;
-            height: 85px;
-            background: #f0f4fa;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05), inset 0 0 0 1px rgba(0,0,0,0.02);
-        }
-        .core {
-            width: 38px;
-            height: 38px;
-            background: radial-gradient(circle, #4a6a8a, #2c3e50);
-            border-radius: 50%;
-            transition: 0.1s;
-        }
-
-        /* Chat container */
+        /* chat panel */
         .chat-panel {
-            background: #fefefe;
-            margin: 12px 20px 16px 20px;
-            border-radius: 32px;
-            padding: 18px 14px;
-            min-height: 240px;
+            background: #ffffff;
+            margin: 12px 18px 16px;
+            border-radius: 28px;
+            padding: 16px 12px;
+            min-height: 260px;
             max-height: 320px;
             overflow-y: auto;
-            box-shadow: inset 0 1px 4px rgba(0,0,0,0.02), 0 2px 6px rgba(0,0,0,0.02);
-            border: 1px solid #edf2f7;
+            border: 1px solid #eef2f6;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
         }
         .message {
             margin-bottom: 18px;
@@ -137,35 +105,30 @@
             flex-direction: column;
             animation: slideUp 0.2s ease;
         }
-        .user-msg {
-            align-items: flex-end;
-        }
-        .jarvis-msg {
-            align-items: flex-start;
-        }
+        .user { align-items: flex-end; }
+        .jarvis { align-items: flex-start; }
         .bubble {
             max-width: 85%;
-            padding: 10px 16px;
+            padding: 10px 18px;
             border-radius: 26px;
             font-size: 0.9rem;
-            line-height: 1.4;
+            line-height: 1.45;
             word-break: break-word;
         }
-        .user-msg .bubble {
-            background: #e9f0f9;
-            color: #1a2a3a;
+        .user .bubble {
+            background: #eef2ff;
+            color: #0f172a;
             border-bottom-right-radius: 6px;
         }
-        .jarvis-msg .bubble {
-            background: #ffffff;
-            color: #1e2f3d;
+        .jarvis .bubble {
+            background: #f8fafc;
             border: 1px solid #e2e8f0;
+            color: #0f172a;
             border-bottom-left-radius: 6px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
         }
-        .msg-time {
+        .time {
             font-size: 0.6rem;
-            color: #8a9bb0;
+            color: #94a3b8;
             margin: 4px 12px 0;
         }
         @keyframes slideUp {
@@ -173,9 +136,36 @@
             to { opacity: 1; transform: translateY(0);}
         }
 
-        /* Controls */
+        /* thinking indicator */
+        .thinking-area {
+            display: flex;
+            justify-content: center;
+            margin: 0px 10px 12px;
+        }
+        .thinking-badge {
+            background: #eef2ff;
+            border-radius: 60px;
+            padding: 6px 16px;
+            font-size: 0.75rem;
+            color: #1e293b;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .spinner {
+            width: 14px;
+            height: 14px;
+            border: 2px solid #cbd5e1;
+            border-top-color: #f97316;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .hidden { display: none; }
+
+        /* controls */
         .input-row {
-            padding: 8px 20px 24px;
+            padding: 8px 20px 12px;
             display: flex;
             gap: 12px;
             align-items: center;
@@ -183,151 +173,158 @@
         }
         .text-input {
             flex: 1;
-            background: #f8fafd;
-            border: 1px solid #dee4ec;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
             border-radius: 44px;
             padding: 14px 18px;
-            font-size: 0.95rem;
-            color: #1e2f3d;
+            font-size: 0.9rem;
             outline: none;
             transition: 0.2s;
         }
         .text-input:focus {
-            border-color: #7f8c8d;
+            border-color: #94a3b8;
             background: white;
         }
         .send-btn {
-            background: #eef2f6;
+            background: #f1f5f9;
             border: none;
-            width: 52px;
-            height: 52px;
+            width: 50px;
+            height: 50px;
             border-radius: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            font-size: 1.2rem;
             cursor: pointer;
-            transition: 0.2s;
-            color: #2c3e50;
-            font-size: 1.3rem;
+            transition: 0.1s;
         }
         .send-btn:active { transform: scale(0.94); background: #e2e8f0; }
 
-        .enable-btn {
-            background: linear-gradient(145deg, #2c3e50, #1e2f3d);
+        .voice-btn {
+            background: linear-gradient(105deg, #1e293b, #0f172a);
             border: none;
             color: white;
             font-weight: 600;
-            padding: 12px 24px;
+            padding: 14px 24px;
             border-radius: 60px;
-            font-size: 0.9rem;
-            margin: 4px 20px 20px;
+            font-size: 1rem;
+            margin: 8px 20px 18px;
             cursor: pointer;
-            transition: 0.2s;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: 0.1s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
-        .enable-btn:active { transform: scale(0.96); }
-        .footer-note {
+        .voice-btn:active { transform: scale(0.96); }
+        .voice-btn.listening {
+            background: #f97316;
+            box-shadow: 0 0 0 3px #fed7aa;
+        }
+        .footer {
             text-align: center;
             font-size: 0.65rem;
-            color: #8896a8;
-            padding: 0 20px 20px;
+            color: #64748b;
+            padding: 0 20px 22px;
         }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: #eef2f6; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background: #b9c4d1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        button { font-family: inherit; }
     </style>
 </head>
 <body>
-<div class="jarvis-card" id="appRoot">
-    <div class="jarvis-header">
-        <div class="title-group">
-            <span class="jarvis">J.A.R.V.I.S</span>
-            <span class="badge">वेक वर्ड: "जार्विस"</span>
-        </div>
-        <div class="status-area">
-            <div class="wake-dot" id="wakeLed"></div>
-            <span class="status-text" id="statusLabel">प्रारंभ करा</span>
+<div class="jarvis-card">
+    <div class="header">
+        <div class="title">J.A.R.V.I.S</div>
+        <div class="badge">⚡ All Apps ⚡</div>
+        <div class="status-led">
+            <div class="led" id="statusLed"></div>
+            <span id="statusLabel" class="status-text">Ready</span>
         </div>
     </div>
 
-    <div class="visualizer">
-        <div class="arc-light" id="arcLight">
-            <div class="core"></div>
-        </div>
-    </div>
-
+    <!-- chat area -->
     <div class="chat-panel" id="chatContainer">
-        <div class="message jarvis-msg">
-            <div class="bubble">🎙️ नमस्कार! मी जार्विस. मला "जार्विस" म्हणून हाक मारा. उदा. "जार्विस, YouTube उघड" किंवा "Jarvis, open Google". मी तुमच्या भाषेत उत्तर देईन.</div>
-            <div class="msg-time">आत्ताच</div>
+        <div class="message jarvis">
+            <div class="bubble">👋 Hello, I'm JARVIS. Tap the <strong>🎙️ Speak & Send</strong> button below, say your command, and I'll act. <br> ✨ I can open many apps, tell time, weather, joke, search web, calculate, and more.</div>
+            <div class="time">just now</div>
+        </div>
+    </div>
+    <div class="thinking-area" id="thinkingBox">
+        <div class="thinking-badge hidden" id="thinkingBadge">
+            <div class="spinner"></div> <span>JARVIS is thinking...</span>
         </div>
     </div>
 
+    <!-- text + send -->
     <div class="input-row">
-        <input type="text" id="textCommand" class="text-input" placeholder="इथे टाइप करा ..." autocomplete="off">
+        <input type="text" id="textCommand" class="text-input" placeholder="Type command... (e.g., open YouTube)">
         <button class="send-btn" id="sendTextBtn">➤</button>
     </div>
-    <button class="enable-btn" id="enableVoiceBtn">🎤 माइक सुरू करा / वेक वर्ड सक्रिय करा</button>
-    <div class="footer-note">
-        🔊 एकदा Enable केल्यानंतर फक्त "जार्विस" बोला, मग थेट आज्ञा द्या. <br>
-        ⚡ उदा. "YouTube उघड", "Google सर्च कर", "वेळ सांग", "विनोद सांग", "weather".
+    <!-- push-to-talk button: after mic enabled, just tap to speak & send -->
+    <button class="voice-btn" id="voiceBtn">🎙️ Speak & Send Voice Command</button>
+    <div class="footer">
+        ⚡ One tap on the button → speak → command is sent automatically. <br>
+        📱 Supported apps: YouTube, Google, WhatsApp, Instagram, Facebook, Twitter, Gmail, Maps, Spotify, Netflix, Amazon, LinkedIn, Telegram, Chrome & more.
     </div>
 </div>
 
 <script>
-    // ---------- DOM elements ----------
+    // ----- DOM elements -----
     const chatContainer = document.getElementById('chatContainer');
     const textInput = document.getElementById('textCommand');
-    const sendBtn = document.getElementById('sendTextBtn');
-    const enableBtn = document.getElementById('enableVoiceBtn');
-    const wakeLed = document.getElementById('wakeLed');
-    const statusLabel = document.getElementById('statusLabel');
-    const arcLight = document.getElementById('arcLight');
+    const sendTextBtn = document.getElementById('sendTextBtn');
+    const voiceBtn = document.getElementById('voiceBtn');
+    const statusLed = document.getElementById('statusLed');
+    const statusLabelSpan = document.getElementById('statusLabel');
+    const thinkingBadge = document.getElementById('thinkingBadge');
 
-    // Voice & wake word state
+    // ----- Speech & state -----
     let recognition = null;
-    let isContinuousListening = false;    // mic always on after enable
-    let wakeWordTriggered = false;        // "jarvis" spoken, now expecting command
-    let commandTimeout = null;
+    let isListeningForVoice = false;      // whether we are actively listening via button
     let synth = window.speechSynthesis;
     let currentUtterance = null;
-    
-    // Language detection & simple responses in Marathi/Hinglish/English
+    let micPermissionGranted = false;      // track if mic permission is ready
+
     const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
     const isRecognitionSupported = SpeechRecognitionAPI !== undefined;
 
-    // Helper: UI update
-    function setUIState(state, isWakeActive = false) {
-        if (state === 'listening') {
-            wakeLed.classList.add('active');
-            statusLabel.innerText = '🎙️ ऐकतोय... "जार्विस" बोला';
-            if (arcLight) arcLight.style.boxShadow = '0 0 0 2px #f39c12, 0 4px 12px rgba(0,0,0,0.1)';
-        } else if (state === 'wake_ready') {
-            wakeLed.classList.add('active');
-            statusLabel.innerText = '🔊 सांगा आज्ञा...';
-        } else if (state === 'processing') {
-            wakeLed.classList.add('active');
-            statusLabel.innerText = '⚙️ प्रक्रिया करतोय...';
+    // Helper UI updates
+    function setStatus(status, isActive = false) {
+        if (status === 'listening') {
+            statusLed.classList.add('active');
+            statusLabelSpan.innerText = '🎙️ Listening... speak now';
+            voiceBtn.classList.add('listening');
+            voiceBtn.innerHTML = '🎙️ Listening... tap to stop?';
+        } else if (status === 'processing') {
+            statusLed.classList.add('active');
+            statusLabelSpan.innerText = '⚡ Processing...';
+            voiceBtn.classList.remove('listening');
+            voiceBtn.innerHTML = '🎙️ Speak & Send Voice Command';
         } else {
-            wakeLed.classList.remove('active');
-            statusLabel.innerText = state === 'ready' ? '✅ सज्ज | "जार्विस" बोला' : '⏸️ सुरू करा';
-            if (arcLight) arcLight.style.boxShadow = 'none';
-        }
-        if (isWakeActive) {
-            // extra visual
+            statusLed.classList.remove('active');
+            statusLabelSpan.innerText = status === 'ready' ? '✅ Ready' : '⏸️ Ready';
+            voiceBtn.classList.remove('listening');
+            voiceBtn.innerHTML = '🎙️ Speak & Send Voice Command';
         }
     }
 
-    // Add message to chat (type: 'user' or 'jarvis')
-    function addMessage(sender, text, isMarathi = false) {
+    function setThinking(show) {
+        if (show) {
+            thinkingBadge.classList.remove('hidden');
+        } else {
+            thinkingBadge.classList.add('hidden');
+        }
+    }
+
+    function addMessage(sender, text) {
         const msgDiv = document.createElement('div');
-        msgDiv.className = `message ${sender === 'user' ? 'user-msg' : 'jarvis-msg'}`;
+        msgDiv.className = `message ${sender === 'user' ? 'user' : 'jarvis'}`;
         const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        msgDiv.innerHTML = `<div class="bubble">${escapeHtml(text)}</div><div class="msg-time">${timeStr}</div>`;
+        msgDiv.innerHTML = `<div class="bubble">${escapeHtml(text)}</div><div class="time">${timeStr}</div>`;
         chatContainer.appendChild(msgDiv);
         chatContainer.scrollTop = chatContainer.scrollHeight;
-        // keep chat size reasonable
-        while (chatContainer.children.length > 30) chatContainer.removeChild(chatContainer.children[0]);
+        // keep chat clean
+        while (chatContainer.children.length > 35) chatContainer.removeChild(chatContainer.children[0]);
     }
 
     function escapeHtml(str) {
@@ -339,356 +336,302 @@
         });
     }
 
-    // speak with language adaptability (just use same text)
     function speakResponse(text, callback) {
-        if (!synth) {
-            if (callback) callback();
-            return;
-        }
+        if (!synth) { if (callback) callback(); return; }
         if (currentUtterance) synth.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'hi-IN';   // supports mixed Hinglish / Marathi pronunciation well
-        utterance.rate = 0.92;
+        utterance.lang = 'en-US';
+        utterance.rate = 0.94;
         utterance.pitch = 1.05;
-        utterance.volume = 1;
-        utterance.onend = () => {
-            currentUtterance = null;
-            if (callback) callback();
-        };
-        utterance.onerror = () => {
-            currentUtterance = null;
-            if (callback) callback();
-        };
+        utterance.onend = () => { currentUtterance = null; if(callback) callback(); };
+        utterance.onerror = () => { currentUtterance = null; if(callback) callback(); };
         currentUtterance = utterance;
         synth.speak(utterance);
     }
 
-    // ---------- CORE JARVIS LOGIC (supports multi-language replies) ----------
-    function detectLanguageAndRespond(commandText) {
-        const lowerCmd = commandText.toLowerCase();
-        // check for Marathi / Hinglish keywords
-        const isMarathiQuery = /वेळ|तारीख|किती|कोण|कुठे|विनोद|गम्मत|हवामान|उघड|सर्च|शोधा|चालू कर|बंद कर|थांब/.test(lowerCmd);
-        
-        // default English replies, but we'll customize based on language
-        let reply = "";
-        
-        // --- APP OPENING (direct action) ---
-        if (lowerCmd.includes('open youtube') || lowerCmd.includes('यूट्यूब उघड') || lowerCmd.includes('youtube उघड')) {
-            reply = isMarathiQuery ? "यूट्यूब उघडतोय, साहेब." : "Opening YouTube, sir.";
-            addMessage('jarvis', reply);
-            speakResponse(reply);
-            window.location.href = 'https://www.youtube.com/';
-            return true;
+    // ---------- ⭐ CORE INTELLIGENCE: OPEN APPS + ACTIONS ----------
+    async function processCommand(commandText) {
+        const cmd = commandText.trim().toLowerCase();
+        if (cmd === "") return;
+        addMessage('user', commandText);
+        setThinking(true);
+        setStatus('processing');
+
+        // --- DIRECT APP OPENING (MORE THAN 15 APPS) ---
+        const appMappings = [
+            { keywords: ['open youtube', 'youtube launch', 'start youtube'], url: 'https://www.youtube.com/', reply: 'Opening YouTube, sir.' },
+            { keywords: ['open google', 'launch google'], url: 'https://www.google.com/', reply: 'Opening Google.' },
+            { keywords: ['open whatsapp', 'start whatsapp'], url: 'https://web.whatsapp.com/', reply: 'Launching WhatsApp.' },
+            { keywords: ['open instagram', 'launch instagram'], url: 'https://www.instagram.com/', reply: 'Opening Instagram.' },
+            { keywords: ['open facebook', 'launch facebook'], url: 'https://www.facebook.com/', reply: 'Opening Facebook.' },
+            { keywords: ['open twitter', 'open x', 'launch twitter'], url: 'https://twitter.com/', reply: 'Opening Twitter.' },
+            { keywords: ['open gmail', 'launch gmail'], url: 'https://mail.google.com/', reply: 'Opening Gmail.' },
+            { keywords: ['open maps', 'open google maps', 'launch maps'], url: 'https://maps.google.com/', reply: 'Opening Google Maps.' },
+            { keywords: ['open spotify', 'launch spotify'], url: 'https://open.spotify.com/', reply: 'Opening Spotify.' },
+            { keywords: ['open netflix', 'launch netflix'], url: 'https://www.netflix.com/', reply: 'Opening Netflix.' },
+            { keywords: ['open amazon', 'launch amazon'], url: 'https://www.amazon.com/', reply: 'Opening Amazon.' },
+            { keywords: ['open linkedin', 'launch linkedin'], url: 'https://www.linkedin.com/', reply: 'Opening LinkedIn.' },
+            { keywords: ['open telegram', 'launch telegram'], url: 'https://web.telegram.org/', reply: 'Opening Telegram.' },
+            { keywords: ['open chrome', 'open browser'], url: 'https://www.google.com/chrome/', reply: 'Opening browser.' },
+            { keywords: ['open reddit', 'launch reddit'], url: 'https://www.reddit.com/', reply: 'Opening Reddit.' },
+            { keywords: ['open github', 'launch github'], url: 'https://github.com/', reply: 'Opening GitHub.' },
+            { keywords: ['open drive', 'google drive'], url: 'https://drive.google.com/', reply: 'Opening Google Drive.' },
+            { keywords: ['open calendar', 'google calendar'], url: 'https://calendar.google.com/', reply: 'Opening Calendar.' }
+        ];
+
+        for (let app of appMappings) {
+            if (app.keywords.some(kw => cmd.includes(kw))) {
+                addMessage('jarvis', app.reply);
+                speakResponse(app.reply);
+                setTimeout(() => { window.location.href = app.url; }, 300);
+                setThinking(false);
+                setStatus('ready');
+                return;
+            }
         }
-        else if (lowerCmd.includes('open google') || lowerCmd.includes('google उघड') || lowerCmd.includes('गूगल उघड')) {
-            reply = isMarathiQuery ? "गूगल उघडत आहे." : "Opening Google.";
-            addMessage('jarvis', reply);
-            speakResponse(reply);
-            window.location.href = 'https://www.google.com/';
-            return true;
-        }
-        else if (lowerCmd.includes('open whatsapp') || lowerCmd.includes('whatsapp उघड') || lowerCmd.includes('व्हॉट्सअॅप')) {
-            reply = isMarathiQuery ? "व्हॉट्सअॅप सुरू करतोय." : "Launching WhatsApp.";
-            addMessage('jarvis', reply);
-            speakResponse(reply);
-            window.location.href = 'https://web.whatsapp.com/';
-            return true;
-        }
-        else if (lowerCmd.includes('open instagram') || lowerCmd.includes('instagram उघड') || lowerCmd.includes('इन्स्टाग्राम')) {
-            reply = isMarathiQuery ? "इंस्टाग्राम उघडतोय." : "Opening Instagram.";
-            addMessage('jarvis', reply);
-            speakResponse(reply);
-            window.location.href = 'https://www.instagram.com/';
-            return true;
-        }
-        else if (lowerCmd.includes('open chrome') || lowerCmd.includes('ब्राउझर') || lowerCmd.includes('browser')) {
-            reply = isMarathiQuery ? "ब्राउझर उघडतो." : "Opening browser.";
-            addMessage('jarvis', reply);
-            speakResponse(reply);
-            window.location.href = 'https://www.google.com';
-            return true;
-        }
-        
+
         // --- TIME & DATE ---
-        else if (lowerCmd.includes('time') || lowerCmd.includes('वेळ') || lowerCmd.includes('किती वाजले')) {
+        if (cmd.includes('time')) {
             const now = new Date();
             const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            reply = isMarathiQuery ? `आता वेळ ${timeStr} आहे, सर.` : `The time is ${timeStr}, sir.`;
+            const reply = `The time is ${timeStr}, sir.`;
             addMessage('jarvis', reply);
             speakResponse(reply);
-            return true;
+            setThinking(false); setStatus('ready'); return;
         }
-        else if (lowerCmd.includes('date') || lowerCmd.includes('तारीख') || lowerCmd.includes('आज कोणती तारीख')) {
+        if (cmd.includes('date') || cmd.includes('today\'s date')) {
             const now = new Date();
-            const dateStr = now.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
-            reply = isMarathiQuery ? `आजची तारीख ${dateStr} आहे.` : `Today's date is ${dateStr}.`;
+            const dateStr = now.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            const reply = `Today is ${dateStr}.`;
             addMessage('jarvis', reply);
             speakResponse(reply);
-            return true;
+            setThinking(false); setStatus('ready'); return;
         }
-        
-        // --- WEATHER (mock) ---
-        else if (lowerCmd.includes('weather') || lowerCmd.includes('हवामान') || lowerCmd.includes('तापमान')) {
-            reply = isMarathiQuery ? "हवामान अंदाजे २२ अंश सेल्सिअस, स्वच्छ आभाळ. अचूक माहितीसाठी लोकेशन परवानगी आवश्यक." : "Weather around 22°C, clear skies. For precise update, location permission needed.";
-            addMessage('jarvis', reply);
-            speakResponse(reply);
-            return true;
+
+        // --- WEATHER (free API) ---
+        if (cmd.includes('weather') || cmd.includes('temperature') || cmd.includes('forecast')) {
+            try {
+                const res = await fetch('https://wttr.in/?format=%C+%t+%w');
+                const weatherText = await res.text();
+                const reply = `Current conditions: ${weatherText}.`;
+                addMessage('jarvis', reply);
+                speakResponse(reply);
+            } catch(e) {
+                addMessage('jarvis', 'Weather service unavailable, sir.');
+                speakResponse('Weather not available.');
+            }
+            setThinking(false); setStatus('ready'); return;
         }
-        
-        // --- JOKES (bilingual) ---
-        else if (lowerCmd.includes('joke') || lowerCmd.includes('विनोद') || lowerCmd.includes('हसव') || lowerCmd.includes('funny')) {
+
+        // --- JOKES ---
+        if (cmd.includes('joke') || cmd.includes('tell me a joke')) {
             const jokes = [
                 "Why don't scientists trust atoms? Because they make up everything!",
                 "What do you call a fake noodle? An impasta.",
-                "मी कॉम्प्युटरला सांगितलं की मला ब्रेक हवाय, आता तो मला सतत सुट्टीचे जाहिरात दाखवतोय!"
+                "Why did the scarecrow win an award? He was outstanding in his field.",
+                "I told my computer I needed a break, now it won't stop sending vacation ads.",
+                "What's the best thing about Switzerland? I don't know, but the flag is a big plus."
             ];
-            let selected = jokes[Math.floor(Math.random() * jokes.length)];
-            reply = selected;
-            addMessage('jarvis', reply);
-            speakResponse(reply);
-            return true;
+            const joke = jokes[Math.floor(Math.random() * jokes.length)];
+            addMessage('jarvis', joke);
+            speakResponse(joke);
+            setThinking(false); setStatus('ready'); return;
         }
-        
-        // --- SEARCH (Google search) ---
-        else if (lowerCmd.includes('search') || lowerCmd.includes('शोधा') || lowerCmd.includes('google कर') || lowerCmd.includes('सर्च कर')) {
-            let query = commandText.replace(/search|शोधा|google कर|सर्च कर/gi, '').trim();
-            if (query.length === 0) {
-                reply = isMarathiQuery ? "काय शोधायचं ते सांगा, सर." : "What should I search for, sir?";
-                addMessage('jarvis', reply);
-                speakResponse(reply);
-                return true;
-            }
-            reply = isMarathiQuery ? `"${query}" साठी शोधतोय.` : `Searching for "${query}".`;
-            addMessage('jarvis', reply);
-            speakResponse(reply);
-            setTimeout(() => {
-                window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
-            }, 500);
-            return true;
-        }
-        
-        // --- OPEN ANY APP via custom intent (generic fallback) ---
-        else if ((lowerCmd.includes('उघड') || lowerCmd.includes('open ')) && (lowerCmd.includes('app') || lowerCmd.match(/उघड \w+/))) {
-            let appPart = commandText.replace(/open|उघड/gi, '').trim();
-            if (appPart.length > 0) {
-                reply = isMarathiQuery ? `${appPart} उघडण्याचा प्रयत्न करतो.` : `Trying to open ${appPart}.`;
-                addMessage('jarvis', reply);
-                speakResponse(reply);
-                window.open(`https://www.google.com/search?q=${encodeURIComponent(appPart)}`, '_blank');
-                return true;
-            }
-        }
-        
-        // --- GREETINGS & INTRODUCTION ---
-        else if (lowerCmd.match(/hello|hi|namaskar|नमस्कार|जार्विस|jarvis/i) && !wakeWordTriggered) {
-            reply = isMarathiQuery ? "नमस्कार सर, मी जार्विस. काय आज्ञा?" : "Hello sir, I'm JARVIS. Ready for your command.";
-            addMessage('jarvis', reply);
-            speakResponse(reply);
-            return true;
-        }
-        
-        // --- STOP SPEAKING ---
-        else if (lowerCmd.includes('stop') || lowerCmd.includes('थांब') || lowerCmd.includes('शांत राहा') || lowerCmd.includes('बंद कर आवाज')) {
-            if (currentUtterance) synth.cancel();
-            reply = isMarathiQuery ? "थांबलो, सर." : "Stopped speaking, sir.";
-            addMessage('jarvis', reply);
-            speakResponse(reply);
-            return true;
-        }
-        
-        // --- fallback with multi language ---
-        else {
-            if (isMarathiQuery) {
-                reply = "सर, मी YouTube, Google, WhatsApp, Instagram उघडू शकतो. तसेच वेळ, तारीख, विनोद, हवामान, आणि वेब शोधू शकतो. कृपया 'YouTube उघड' किंवा 'वेळ सांग' सारखी आज्ञा द्या.";
-            } else {
-                reply = "Sir, I can open YouTube, Google, WhatsApp, Instagram. Also tell time, date, jokes, weather, search web. Try 'open YouTube' or 'what's the time'.";
-            }
-            addMessage('jarvis', reply);
-            speakResponse(reply);
-            return true;
-        }
-    }
 
-    // Main command processor
-    function processCommand(rawCommand) {
-        let command = rawCommand.trim();
-        if (command === "") return;
-        addMessage('user', command);
-        setUIState('processing');
-        setTimeout(() => {
-            detectLanguageAndRespond(command);
-            setUIState('ready');
-        }, 50);
-    }
-
-    // ---------- WAKE WORD + CONTINUOUS LISTENING ----------
-    function initWakeWordListening() {
-        if (!isRecognitionSupported) {
-            addMessage('jarvis', "तुमचा ब्राउझर voice recognition सपोर्ट करत नाही. कृपया Chrome किंवा Edge वापरा.");
-            return false;
-        }
-        if (recognition) {
-            try { recognition.stop(); } catch(e) {}
-        }
-        recognition = new SpeechRecognitionAPI();
-        recognition.continuous = true;
-        recognition.interimResults = true;
-        recognition.lang = 'hi-IN';  // supports Marathi/Hinglish/English mixed
-        recognition.maxAlternatives = 1;
-        
-        recognition.onstart = () => {
-            isContinuousListening = true;
-            setUIState('listening');
-        };
-        
-        recognition.onend = () => {
-            if (isContinuousListening) {
-                // auto-restart for continuous listening
-                try { recognition.start(); } catch(e) { console.warn("restart failed"); }
-            } else {
-                setUIState('ready');
-            }
-        };
-        
-        recognition.onerror = (event) => {
-            console.error("Speech error", event.error);
-            if (event.error === 'no-speech') {
-                // ignore
-            } else if (event.error === 'not-allowed') {
-                addMessage('jarvis', "माइक परवानगी नाकारली. कृपया परवानगी द्या आणि पुन्हा Enable करा.");
-                isContinuousListening = false;
-                setUIState('ready');
-            } else {
-                setUIState('ready');
-            }
-        };
-        
-        recognition.onresult = (event) => {
-            let fullTranscript = '';
-            for (let i = event.resultIndex; i < event.results.length; i++) {
-                fullTranscript += event.results[i][0].transcript.toLowerCase();
-            }
-            
-            // Wake word: "जार्विस" or "jarvis" (case insensitive)
-            const containsWake = fullTranscript.includes('जार्विस') || fullTranscript.includes('jarvis');
-            
-            if (!wakeWordTriggered && containsWake) {
-                // WAKE WORD DETECTED
-                wakeWordTriggered = true;
-                setUIState('wake_ready');
-                // Provide audio feedback + visual
-                speakResponse("हो सर, सांगा.", () => {});
-                addMessage('jarvis', "🎙️ हो सर, आज्ञा द्या.");
-                // Clear any old timeout
-                if (commandTimeout) clearTimeout(commandTimeout);
-                commandTimeout = setTimeout(() => {
-                    if (wakeWordTriggered) {
-                        wakeWordTriggered = false;
-                        setUIState('listening');
-                        addMessage('jarvis', "वेळ संपला, पुन्हा 'जार्विस' म्हणा.");
-                    }
-                }, 7000);
-                return;
-            }
-            
-            // If wake word active, capture command after wake word
-            if (wakeWordTriggered) {
-                // Try to extract text after the wake word
-                let afterWake = "";
-                const wakeIndex = fullTranscript.indexOf('jarvis') !== -1 ? fullTranscript.indexOf('jarvis') : fullTranscript.indexOf('जार्विस');
-                if (wakeIndex !== -1) {
-                    afterWake = fullTranscript.substring(wakeIndex + (fullTranscript.includes('jarvis') ? 6 : 5)).trim();
-                } else {
-                    afterWake = fullTranscript.trim();
-                }
-                
-                if (afterWake.length > 2) {
-                    // valid command received
-                    wakeWordTriggered = false;
-                    if (commandTimeout) clearTimeout(commandTimeout);
-                    setUIState('processing');
-                    processCommand(afterWake);
-                    // after processing, state remains ready but mic stays on
-                    setTimeout(() => { setUIState('listening'); }, 1500);
-                }
-            }
-        };
-        
-        try {
-            recognition.start();
-            return true;
-        } catch(e) {
-            console.error(e);
-            addMessage('jarvis', "माइक सुरू करताना त्रुटी. पुन्हा प्रयत्न करा.");
-            return false;
-        }
-    }
-    
-    // Stop listening & disable wake word
-    function stopListening() {
-        if (recognition) {
+        // --- CALCULATIONS ---
+        if (cmd.match(/calculate|math|compute|[\d+\-*/().]/) && !cmd.match(/search|google/)) {
             try {
-                recognition.stop();
-            } catch(e) {}
+                let expr = cmd.replace(/calculate|math|compute/gi, '').replace(/[^0-9+\-*/().]/g, '');
+                if (expr.length > 0 && !expr.match(/[a-zA-Z]/)) {
+                    let result = eval(expr);
+                    const reply = `The result is ${result}.`;
+                    addMessage('jarvis', reply);
+                    speakResponse(reply);
+                } else throw new Error();
+            } catch(e) {
+                addMessage('jarvis', "I couldn't compute that, sir.");
+                speakResponse("Invalid calculation.");
+            }
+            setThinking(false); setStatus('ready'); return;
         }
-        isContinuousListening = false;
-        wakeWordTriggered = false;
-        if (commandTimeout) clearTimeout(commandTimeout);
-        setUIState('ready');
+
+        // --- WEB SEARCH (Google) ---
+        if (cmd.includes('search') || cmd.includes('google') || cmd.includes('find')) {
+            let query = commandText.replace(/search|google|find/gi, '').trim();
+            if (!query) {
+                addMessage('jarvis', 'What should I search for?');
+                speakResponse('What should I search?');
+            } else {
+                const reply = `Searching for "${query}".`;
+                addMessage('jarvis', reply);
+                speakResponse(reply);
+                setTimeout(() => { window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank'); }, 600);
+            }
+            setThinking(false); setStatus('ready'); return;
+        }
+
+        // --- GENERAL KNOWLEDGE (DuckDuckGo) ---
+        if (cmd.match(/what is|who is|define|meaning of|tell me about/)) {
+            setThinking(true);
+            let query = commandText.replace(/what is|who is|define|meaning of|tell me about/gi, '').trim();
+            if (query.length < 3) {
+                addMessage('jarvis', 'Please specify a topic, sir.');
+                speakResponse('Please specify a topic.');
+                setThinking(false); setStatus('ready'); return;
+            }
+            try {
+                const apiUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1&skip_disambig=1`;
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                let answer = data.AbstractText;
+                if (answer && answer.length > 0) {
+                    const shortAnswer = answer.length > 380 ? answer.substring(0, 380) + '...' : answer;
+                    addMessage('jarvis', shortAnswer);
+                    speakResponse(shortAnswer);
+                } else {
+                    const fallback = `I couldn't find detailed info about "${query}". Try searching online.`;
+                    addMessage('jarvis', fallback);
+                    speakResponse(fallback);
+                }
+            } catch(err) {
+                addMessage('jarvis', 'Knowledge service error. Please try again.');
+                speakResponse('Error fetching info.');
+            }
+            setThinking(false); setStatus('ready'); return;
+        }
+
+        // --- GREETINGS & HELP---
+        if (cmd.match(/hello|hi|hey jarvis|good morning|good evening/)) {
+            const greet = "Hello sir, I'm JARVIS. I can open apps like YouTube, WhatsApp, Gmail, Maps, Spotify, Netflix, and many more. Just say 'open app name' or ask me anything.";
+            addMessage('jarvis', greet);
+            speakResponse(greet);
+            setThinking(false); setStatus('ready'); return;
+        }
+
+        if (cmd.includes('stop') || cmd.includes('shut up') || cmd.includes('be quiet')) {
+            if (currentUtterance) synth.cancel();
+            addMessage('jarvis', 'As you wish, sir.');
+            speakResponse('Stopped.');
+            setThinking(false); setStatus('ready'); return;
+        }
+
+        // fallback
+        const fallback = "Sir, I can open many apps: YouTube, Google, WhatsApp, Instagram, Facebook, Twitter, Gmail, Maps, Spotify, Netflix, Amazon, LinkedIn, Telegram, GitHub, Drive, Calendar. Also time, weather, jokes, calculations, web search, and definitions. Just say 'open YouTube' or 'what's the time'.";
+        addMessage('jarvis', fallback);
+        speakResponse(fallback);
+        setThinking(false);
+        setStatus('ready');
     }
-    
-    // Enable voice + wake word (called on button click)
-    function enableVoiceAndWake() {
+
+    // ---------- VOICE RECOGNITION (Push-to-Talk: tap button, speak, auto-send) ----------
+    function startVoiceRecognition() {
         if (!isRecognitionSupported) {
-            addMessage('jarvis', "Voice unsupported. Please use Chrome on Android or Safari.");
+            addMessage('jarvis', 'Voice recognition is not supported in this browser. Please use Chrome, Edge, or Safari.');
             return;
         }
-        // Stop existing if any
-        stopListening();
-        // Request mic permission with a small delay
-        navigator.mediaDevices.getUserMedia({ audio: true })
-            .then(() => {
-                const started = initWakeWordListening();
-                if (started) {
-                    addMessage('jarvis', "🎤 माइक सक्रिय. आता फक्त 'जार्विस' बोला. उदा. 'जार्विस, YouTube उघड'");
-                    statusLabel.innerText = "🎙️ ऐकतोय... 'जार्विस' बोला";
-                } else {
-                    addMessage('jarvis', "व्हॉइस सुरू करण्यात अडचण. पुन्हा बटण दाबा.");
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                addMessage('jarvis', "माइक परवानगी आवश्यक आहे. कृपया ब्राउझर सेटिंग मध्ये माइक परवानगी द्या.");
-            });
+        // Request permission if not yet granted
+        if (!micPermissionGranted) {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(() => {
+                    micPermissionGranted = true;
+                    initAndStartListening();
+                })
+                .catch((err) => {
+                    console.error(err);
+                    addMessage('jarvis', 'Microphone permission denied. Please allow microphone in settings.');
+                    setStatus('ready');
+                });
+        } else {
+            initAndStartListening();
+        }
     }
-    
-    // ---------- TEXT INPUT HANDLER ----------
-    sendBtn.addEventListener('click', () => {
+
+    function initAndStartListening() {
+        if (recognition) {
+            try { recognition.abort(); } catch(e) {}
+        }
+        recognition = new SpeechRecognitionAPI();
+        recognition.continuous = false;     // single utterance
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+        recognition.maxAlternatives = 1;
+
+        recognition.onstart = () => {
+            isListeningForVoice = true;
+            setStatus('listening');
+        };
+
+        recognition.onend = () => {
+            isListeningForVoice = false;
+            // if we didn't get a result, reset UI
+            if (!recognition.resultReceived) {
+                setStatus('ready');
+                voiceBtn.classList.remove('listening');
+                voiceBtn.innerHTML = '🎙️ Speak & Send Voice Command';
+            }
+        };
+
+        recognition.onresult = (event) => {
+            recognition.resultReceived = true;
+            const transcript = event.results[0][0].transcript;
+            if (transcript && transcript.trim().length > 0) {
+                // process command immediately
+                processCommand(transcript).finally(() => {
+                    setStatus('ready');
+                });
+            } else {
+                addMessage('jarvis', 'I didn\'t hear anything, sir. Please try again.');
+                setStatus('ready');
+            }
+            // stop recognition after result
+            recognition.stop();
+        };
+
+        recognition.onerror = (event) => {
+            console.warn(event.error);
+            if (event.error === 'not-allowed') {
+                addMessage('jarvis', 'Microphone access blocked. Please enable and try again.');
+            } else if (event.error === 'no-speech') {
+                addMessage('jarvis', 'No speech detected. Tap button and speak clearly.');
+            } else {
+                addMessage('jarvis', `Voice error: ${event.error}. Try again.`);
+            }
+            setStatus('ready');
+            isListeningForVoice = false;
+        };
+
+        recognition.start();
+    }
+
+    // text input handler
+    function handleTextCommand() {
         const txt = textInput.value.trim();
         if (txt === "") return;
         textInput.value = "";
         processCommand(txt);
-    });
-    textInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            const txt = textInput.value.trim();
-            if (txt) {
-                textInput.value = "";
-                processCommand(txt);
-            }
+    }
+
+    // Event listeners
+    voiceBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        // if already listening, do nothing or stop? we restart clean
+        if (isListeningForVoice && recognition) {
+            recognition.stop();
         }
+        startVoiceRecognition();
     });
-    
-    enableBtn.addEventListener('click', () => {
-        enableVoiceAndWake();
+
+    sendTextBtn.addEventListener('click', handleTextCommand);
+    textInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleTextCommand();
     });
-    
-    // initial message (no auto mic, user must click enable)
-    addMessage('jarvis', "🔊 कृपया वरील 'माइक सुरू करा' बटण दाबा. त्यानंतर 'जार्विस' बोलताच मी सज्ज होईल.");
-    setUIState('ready');
+
+    // Initial status
+    setStatus('ready');
+    // Pre-check for Web Speech API
+    if (!isRecognitionSupported) {
+        addMessage('jarvis', '⚠️ Voice features require Chrome, Edge, or Safari. You can still type commands.');
+    }
 </script>
 </body>
 </html>
-            
-
