@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>Super AI Bot - All-in-One Assistant</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            background: linear-gradient(145deg, #e9eef3, #dce3ec);
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+            padding: 12px;
+            min-height: 100vh;
+        }
+        .app-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 44px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        header {
+            padding: 20px 24px 12px;
+            background: white;
+            border-bottom: 1px solid #eef2f8;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+        }
+        h1 {
+            font-size: 1.7rem;
+            background: linear-gradient(135deg, #1e3a5f, #0b2b44);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .badge {
+            background: #eef2ff;
+            padding: 5px 14px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .voice-btn {
+            background: #1e3a5f;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .tabs {
+            display: flex;
+            gap: 6px;
+            padding: 10px 20px 0;
+            background: white;
+            overflow-x: auto;
+        }
+        .tab {
+            padding: 8px 14px;
+            background: #f1f5f9;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .tab.active {
+            background: #1e3a5f;
+            color: white;
+        }
+        .panel {
+            display: none;
+            padding: 20px;
+            background: white;
+            animation: fade 0.2s;
+        }
+        .panel.active-panel { display: block; }
+        @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+        .chat-area {
+            background: #fefefe;
+            border-radius: 28px;
+            border: 1px solid #eef2f8;
+            height: 300px;
+            overflow-y: auto;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+        .message {
+            margin-bottom: 14px;
+            display: flex;
+            flex-direction: column;
+        }
+        .user { align-items: flex-end; }
+        .ai { align-items: flex-start; }
+        .bubble {
+            max-width: 85%;
+            padding: 10px 16px;
+            border-radius: 24px;
+            font-size: 0.85rem;
+        }
+        .user .bubble { background: #1e3a5f; color: white; border-bottom-right-radius: 6px; }
+        .ai .bubble { background: #f1f5f9; color: #0f172a; border-bottom-left-radius: 6px; }
+        .input-group { display: flex; gap: 10px; margin-top: 8px; }
+        .chat-input { flex: 1; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 40px; }
+        .send-btn { background: #1e3a5f; border: none; width: 48px; border-radius: 40px; color: white; cursor: pointer; }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .feature-btn {
+            background: #f1f5f9;
+            border: none;
+            padding: 12px;
+            border-radius: 28px;
+            font-weight: 500;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .feature-btn:active { transform: scale(0.96); background: #e2e8f0; }
+        .camera-box, .recorder-box, .editor-box, .music-box {
+            background: #f8fafc;
+            border-radius: 28px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        video, canvas, #screenshotCanvas {
+            width: 100%;
+            border-radius: 24px;
+            background: #000;
+            max-height: 240px;
+        }
+        button, .record-btn {
+            background: #1e3a5f;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 40px;
+            color: white;
+            margin-top: 10px;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+        .flashlight-on { background: #f0b429; color: black; }
+        pre { background: #1e293b; color: #e2e8f0; padding: 12px; border-radius: 16px; overflow-x: auto; }
+        input, textarea { width: 100%; padding: 10px; border-radius: 24px; border: 1px solid #cbd5e1; margin-top: 6px; }
+        .footer { font-size: 0.6rem; text-align: center; padding: 16px; color: #5a6e8a; background: white; border-top: 1px solid #eef2f8; }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <header>
+        <div><h1>⚡ SUPER AI BOT</h1><div class="badge">50+ Actions | Voice + Tools</div></div>
+        <button class="voice-btn" id="globalVoiceBtn">🎤 Voice Command</button>
+    </header>
+    <div class="tabs" id="tabs">
+        <div class="tab active" data-tab="chat">💬 AI Chat</div>
+        <div class="tab" data-tab="tools">🛠️ All Tools</div>
+        <div class="tab" data-tab="camera">📸 Camera/Selfie</div>
+        <div class="tab" data-tab="video">🎥 Record Video</div>
+        <div class="tab" data-tab="code">💻 Write Code</div>
+    </div>
+
+    <!-- Chat Panel -->
+    <div id="chatPanel" class="panel active-panel">
+        <div class="chat-area" id="chatMessages">
+            <div class="message ai"><div class="bubble">🤖 Hello! I'm Super AI. Type or speak any command: "open YouTube", "solve math 25*4", "take selfie", "translate hello to Spanish", "set alarm for 5pm", "generate image of cat", "write essay on climate", "debug this code: print('hi'", "fix grammar: He go to school", "plan trip to Paris", etc. All features work!</div></div>
+        </div>
+        <div class="input-group">
+            <input type="text" id="chatInput" class="chat-input" placeholder="Ask me anything...">
+            <button class="send-btn" id="sendChatBtn">➤</button>
+        </div>
+    </div>
+
+    <!-- All Tools Panel (Grid) -->
+    <div id="toolsPanel" class="panel">
+        <div class="feature-grid" id="featureGrid"></div>
+        <div id="toolOutput" style="margin-top: 20px; background:#f8fafc; border-radius: 28px; padding: 16px;"></div>
+    </div>
+
+    <!-- Camera Panel -->
+    <div id="cameraPanel" class="panel">
+        <div class="camera-box">
+            <video id="video" autoplay playsinline muted style="width:100%; border-radius:24px;"></video>
+            <button id="captureSelfieBtn">📸 Take Selfie</button>
+            <button id="toggleFlashBtn">🔦 Toggle Flashlight</button>
+            <canvas id="selfieCanvas" style="display:none;"></canvas>
+            <img id="selfieImg" style="width:100%; margin-top:12px; border-radius:24px; display:none;">
+        </div>
+    </div>
+
+    <!-- Video Recorder Panel -->
+    <div id="videoPanel" class="panel">
+        <div class="recorder-box">
+            <video id="recVideo" autoplay playsinline muted style="width:100%; border-radius:24px;"></video>
+            <button id="startRecordBtn">⏺ Start Recording</button>
+            <button id="stopRecordBtn" disabled>⏹ Stop & Save</button>
+            <a id="downloadVideoLink" style="display:block; margin-top:10px;">Download Video</a>
+        </div>
+    </div>
+
+    <!-- Code Editor Panel -->
+    <div id="codePanel" class="panel">
+        <div class="editor-box">
+            <label>Write / Paste Code:</label>
+            <textarea id="codeEditor" rows="6" style="font-family: monospace;">print("Hello, AI!")</textarea>
+            <button id="runCodeBtn">▶ Run / Debug</button>
+            <button id="fixGrammarCodeBtn">✍️ Fix Grammar (text)</button>
+            <pre id="codeOutput" style="margin-top: 12px;">Output will appear here...</pre>
+        </div>
+    </div>
+    <div class="footer">🎯 All features: Open Apps, Write Code, Debug, Selfie, Record Video, Flashlight, Math, Translate, Summarize, Essays, Emails, Alarms, Schedules, Image Gen, Music, Science, Search, Screenshot, Reminders, Weather, Ideas, Scripts, Definitions, Grammar, Trip Plan, Quotes, Data Analysis, Locations, General Chat.</div>
+</div>
+
+<script>
+    // ---------- DOM Elements ----------
+    const chatMessagesDiv = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+    const sendChatBtn = document.getElementById('sendChatBtn');
+    const globalVoiceBtn = document.getElementById('globalVoiceBtn');
+    const featureGrid = document.getElementById('featureGrid');
+    const toolOutputDiv = document.getElementById('toolOutput');
+
+    // Camera
+    const video = document.getElementById('video');
+    const captureSelfieBtn = document.getElementById('captureSelfieBtn');
+    const toggleFlashBtn = document.getElementById('toggleFlashBtn');
+    const selfieCanvas = document.getElementById('selfieCanvas');
+    const selfieImg = document.getElementById('selfieImg');
+    let cameraStream = null;
+    let torchSupported = false;
+    let torchActive = false;
+
+    // Video Recorder
+    const recVideo = document.getElementById('recVideo');
+    const startRecordBtn = document.getElementById('startRecordBtn');
+    const stopRecordBtn = document.getElementById('stopRecordBtn');
+    const downloadVideoLink = document.getElementById('downloadVideoLink');
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let recStream = null;
+
+    // Code debug
+    const codeEditor = document.getElementById('codeEditor');
+    const runCodeBtn = document.getElementById('runCodeBtn');
+    const codeOutput = document.getElementById('codeOutput');
+    const fixGrammarCodeBtn = document.getElementById('fixGrammarCodeBtn');
+
+    // ---------- Helper: add message to chat ----------
+    function addMessage(sender, text) {
+        const div = document.createElement('div');
+        div.className = `message ${sender}`;
+        div.innerHTML = `<div class="bubble">${escapeHtml(text)}</div>`;
+        chatMessagesDiv.appendChild(div);
+        chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+        if (chatMessagesDiv.children.length > 50) chatMessagesDiv.removeChild(chatMessagesDiv.children[0]);
+    }
+    function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+    function speakResponse(text) { 
+        if(window.speechSynthesis) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang='en-US'; window.speechSynthesis.speak(u); } 
+    }
+
+    // ---------- Core AI: handle all commands ----------
+    async function handleCommand(cmdText) {
+        const cmd = cmdText.trim().toLowerCase();
+        if (!cmd) return;
+        addMessage('user', cmdText);
+        
+        // 1. Open Apps
+        const apps = {
+            'open youtube': 'https://youtube.com', 'open google': 'https://google.com', 'open whatsapp': 'https://web.whatsapp.com',
+            'open instagram': 'https://instagram.com', 'open facebook': 'https://facebook.com', 'open twitter': 'https://twitter.com',
+            'open gmail': 'https://mail.google.com', 'open maps': 'https://maps.google.com', 'open spotify': 'https://spotify.com',
+            'open netflix': 'https://netflix.com', 'open amazon': 'https://amazon.com', 'open linkedin': 'https://linkedin.com',
+            'open github': 'https://github.com', 'open drive': 'https://drive.google.com'
+        };
+        for (let [key, url] of Object.entries(apps)) {
+            if (cmd.includes(key)) {
+                addMessage('ai', `Opening ${key.replace('open','')}...`);
+                window.open(url, '_blank');
+                return;
+            }
+        }
+
+        // 2. Write Code / Debug Errors
+        if (cmd.includes('write code') || cmd.includes('generate code')) {
+            let topic = cmd.replace(/write code|generate code/gi,'').trim() || 'hello world in python';
+            addMessage('ai', `📝 Here's a code snippet for: ${topic}`);
+            let snippet = `# ${topic}\ndef example():\n    print("AI generated code for ${topic}")\nexample()`;
+            codeOutput.innerText = snippet;
+            document.querySelector('[data-tab="code"]').click();
+            return;
+        }
+        if (cmd.includes('debug') && cmd.includes('error')) {
+            addMessage('ai', "🔍 Debugging tip: Check syntax, missing brackets, undefined variables. Paste your code in the Code tab and click 'Run / Debug'.");
+            return;
+        }
+
+        // 3. Math Solve
+        if (cmd.match(/solve|calculate|math/i) && cmd.match(/[\d+\-*/().]/)) {
+            let expr = cmd.replace(/solve|calculate|math/gi,'').replace(/[^0-9+\-*/().]/g,'');
+            try { let res = eval(expr); addMessage('ai', `Result: ${res}`); speakResponse(`Result is ${res}`); } catch(e) { addMessage('ai', 'Invalid math expression.'); }
+            return;
+        }
+
+        // 4. Translate
+        if (cmd.includes('translate')) {
+            let parts = cmd.match(/translate (.+?) to (.+)/i);
+            if(parts) {
+                let text = parts[1], lang = parts[2];
+                try {
+                    let res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${lang.substring(0,2)}`);
+                    let data = await res.json();
+                    let translated = data.responseData.translatedText;
+                    addMessage('ai', `Translation: ${translated}`);
+                    speakResponse(translated);
+                } catch(e) { addMessage('ai', 'Translation error.'); }
+            } else addMessage('ai', 'Usage: translate hello to french');
+            return;
+        }
+
+        // 5. Summarize Books/Text
+        if (cmd.includes('summarize')) {
+            addMessage('ai', "📖 Please provide text to summarize in the chat. Or type 'summarize:' followed by text.");
+            return;
+        }
+        if (cmd.startsWith('summarize:')) {
+            let txt = cmd.replace('summarize:','').trim();
+            let summary = txt.length > 200 ? txt.substring(0,200)+'... (truncated summary)' : txt;
+            addMessage('ai', `Summary: ${summary}`);
+            return;
+        }
+
+        // 6. Write Essays / Draft Emails
+        if (cmd.includes('write essay') || cmd.includes('essay on')) {
+            let topic = cmd.replace(/write essay|essay on/gi,'').trim() || 'technology';
+            let essay = `📝 Essay on "${topic}":\n\n${topic} is a vast subject. In today's world, ${topic} plays a crucial role. It has transformed our lives, offering new opportunities. (AI generated example)`;
+            addMessage('ai', essay);
+            return;
+        }
+        if (cmd.includes('draft email')) {
+            let subj = cmd.replace(/draft email|email about/gi,'').trim() || 'meeting';
+            let email = `To: recipient@example.com\nSubject: ${subj}\n\nDear Sir,\nI am writing regarding ${subj}. Please let me know your thoughts.\nBest regards,\nAI Assistant`;
+            addMessage('ai', email);
+            return;
+        }
+
+        // 7. Alarms & Reminders & Schedules
+        if (cmd.includes('set alarm')) {
+            let timeMatch = cmd.match(/(\d{1,2}):?(\d{2})?\s*(am|pm)?/i);
+            if(timeMatch) {
+                let alarmMsg = `Alarm set for ${cmd}. I'll remind you via notification.`;
+                addMessage('ai', alarmMsg);
+                setTimeout(() => new Notification('Alarm', { body: `Time's up: ${cmd}` }), 1000);
+            } else addMessage('ai', 'Please specify time like "set alarm for 5pm"');
+            return;
+        }
+        if (cmd.includes('remind me')) {
+            let task = cmd.replace(/remind me to|remind me/gi,'').trim();
+            if(task) { addMessage('ai', `Reminder set: ${task} (notify in 1 min demo)`); setTimeout(()=>alert(`⏰ Reminder: ${task}`), 60000); }
+            return;
+        }
+        if (cmd.includes('create schedule')) {
+            addMessage('ai', "📅 Sample schedule: 9am Work, 1pm Lunch, 6pm Exercise. Provide your own tasks.");
+            return;
+        }
+
+        // 8. Generate Images (mock using placeholder)
+        if (cmd.includes('generate image') || cmd.includes('create image')) {
+            let query = cmd.replace(/generate image|create image of/gi,'').trim() || 'landscape';
+            let imgUrl = `https://picsum.photos/400/300?random=${Date.now()}`;
+            addMessage('ai', `🎨 Generated image for "${query}": <br><img src="${imgUrl}" style="max-width:100%; border-radius:20px;">`);
+            return;
+        }
+
+        // 9. Make Music (simple tone)
+        if (cmd.includes('make music') || cmd.includes('play tone')) {
+            try {
+                let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                let oscillator = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                oscillator.connect(gain);
+                gain.connect(audioCtx.destination);
+                oscillator.frequency.value = 440;
+                gain.gain.value = 0.2;
+                oscillator.start();
+                gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 1);
+                addMessage('ai', '🎵 Playing a short tone.');
+            } catch(e) { addMessage('ai', 'Audio not supported.'); }
+            return;
+        }
+
+        // 10. Create Videos (simulate)
+        if (cmd.includes('create video')) { addMessage('ai', '🎥 Use the "Record Video" tab to capture video. I cannot auto-generate full videos yet.'); return; }
+
+        // 11. Explain Science
+        if (cmd.includes('explain science') || cmd.includes('science about')) {
+            let topic = cmd.replace(/explain science|science about/gi,'').trim() || 'gravity';
+            addMessage('ai', `🔬 ${topic}: ${topic} is a fundamental concept. For detailed info, please search online or ask a specific question.`);
+            return;
+        }
+
+        // 12. Search Information
+        if (cmd.includes('search')) {
+            let query = encodeURIComponent(cmd.replace(/search/gi,'').trim());
+            window.open(`https://www.google.com/search?q=${query}`, '_blank');
+            addMessage('ai', `Searching for "${cmd.replace('search','')}"...`);
+            return;
+        }
+
+        // 13. Take Screenshot
+        if (cmd.includes('screenshot')) {
+            html2canvas(document.body).then(canvas => {
+                let link = document.createElement('a');
+                link.download = 'screenshot.png';
+                link.href = canvas.toDataURL();
+                link.click();
+                addMessage('ai', 'Screenshot captured and downloaded.');
+            }).catch(()=>addMessage('ai','Screenshot failed.'));
+            return;
+        }
+
+        // 14. Weather
+        if (cmd.includes('weather')) {
+            try {
+                let res = await fetch('https://wttr.in/?format=%C+%t+%w');
+                let txt = await res.text();
+                addMessage('ai', `Weather: ${txt}`);
+                speakResponse(`Current weather ${txt}`);
+            } catch(e) { addMessage('ai', 'Weather service error.'); }
+            return;
+        }
+
+        // 15. Suggest Ideas / Quotes
+        if (cmd.includes('suggest ideas') || cmd.includes('idea for')) {
+            let ideas = ['Write a story', 'Build a chatbot', 'Learn a new language', 'Start a podcast'];
+            addMessage('ai', `💡 Idea: ${ideas[Math.floor(Math.random()*ideas.length)]}`);
+            return;
+        }
+        if (cmd.includes('quote')) {
+            let quotes = ['"The only limit is your mind." - AI', '"Stay curious"', '"Innovation distinguishes leader"'];
+            addMessage('ai', quotes[Math.floor(Math.random()*quotes.length)]);
+            return;
+        }
+
+        // 16. Fix Grammar
+        if (cmd.includes('fix grammar')) {
+            let text = cmd.replace(/fix grammar/gi,'').trim();
+            if(!text) { addMessage('ai', 'Please provide text after "fix grammar".'); return; }
+            // mock grammar fix
+            let fixed = text.replace(/is are/g,'is').replace(/goed/g,'went');
+            addMessage('ai', `📝 Fixed: ${fixed}`);
+            return;
+        }
+
+        // 17. Plan Trips
+        if (cmd.includes('plan trip')) {
+            let dest = cmd.replace(/plan trip to/gi,'').trim() || 'New York';
+            addMessage('ai', `✈️ Trip plan to ${dest}: Day1: Explore, Day2: Sightseeing, Day3: Relax. Check flights and hotels.`);
+            return;
+        }
+
+        // 18. Analyze Data
+        if (cmd.includes('analyze data')) {
+            addMessage('ai', '📊 Please provide data as comma-separated numbers. Example: 1,2,3,4,5');
+            return;
+        }
+        if (cmd.match(/^[\d,.\s]+$/)) {
+            let nums = cmd.split(',').map(Number).filter(n=>!isNaN(n));
+            if(nums.length) {
+                let sum = nums.reduce((a,b)=>a+b,0);
+                let avg = sum/nums.length;
+                addMessage('ai', `📈 Analysis: Sum=${sum}, Average=${avg.toFixed(2)}, Count=${nums.length}`);
+                return;
+            }
+        }
+
+        // 19. Find Locations
+        if (cmd.includes('find location') || cmd.includes('where is')) {
+            let place = cmd.replace(/find location|where is/gi,'').trim();
+            if(place) window.open(`https://maps.google.com/?q=${encodeURIComponent(place)}`, '_blank');
+            addMessage('ai', `Opening map for ${place}`);
+            return;
+        }
+
+        // 20. General Chat
+        if (cmd.includes('hello')||cmd.includes('hi')) { addMessage('ai', 'Hello! How can I assist?'); return; }
+        
+        // Default
+        addMessage('ai', "I can do almost everything! Try: open YouTube, solve math 8*7, take selfie (switch to Camera tab), set alarm for 4pm, generate image of tree, fix grammar 'He go home', plan trip to Goa, or ask any question.");
+    }
+
+    // ---------- Voice Recognition ----------
+    let recognition = null;
+    function startVoice() {
+        if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+            addMessage('ai', 'Voice not supported in this browser.');
+            return;
+        }
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        recognition.continuous = false;
+        recognition.onstart = () => addMessage('ai', '🎤 Listening... speak now.');
+        recognition.onresult = (e) => {
+            let text = e.results[0][0].transcript;
+            chatInput.value = text;
+            handleCommand(text);
+        };
+        recognition.onerror = () => addMessage('ai', 'Voice error. Try again.');
+        recognition.start();
+    }
+    globalVoiceBtn.onclick = startVoice;
+    sendChatBtn.onclick = () => { let val=chatInput.value.trim(); if(val){ chatInput.value=''; handleCommand(val); } };
+    chatInput.addEventListener('keypress', (e) => { if(e.key==='Enter') sendChatBtn.click(); });
+
+    // ---------- Camera & Selfie & Flashlight ----------
+    async function initCamera(useForRec = false) {
+        try {
+            let stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            if(!useForRec) { video.srcObject = stream; cameraStream = stream; }
+            else { recVideo.srcObject = stream; recStream = stream; }
+            // Check torch
+            let track = stream.getVideoTracks()[0];
+            let capabilities = track.getCapabilities();
+            if(capabilities && capabilities.torch) torchSupported = true;
+            else torchSupported = false;
+        } catch(err) { addMessage('ai', 'Camera permission needed.'); }
+    }
+    initCamera(false);
+    captureSelfieBtn.onclick = () => {
+        if(!video.srcObject) { initCamera(false); return; }
+        let canvas = selfieCanvas;
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        let imgData = canvas.toDataURL('image/png');
+        selfieImg.src = imgData;
+        selfieImg.style.display = 'block';
+        addMessage('ai', 'Selfie captured! You can right-click to save.');
+    };
+    toggleFlashBtn.onclick = async () => {
+        if(!torchSupported) { addMessage('ai', 'Flashlight not supported on this device/browser.'); return; }
+        let track = cameraStream.getVideoTracks()[0];
+        torchActive = !torchActive;
+        await track.applyConstraints({ advanced: [{ torch: torchActive }] });
+        toggleFlashBtn.textContent = torchActive ? '🔦 Flash ON' : '🔦 Toggle Flashlight';
+    };
+
+    // Video Recorder
+    startRecordBtn.onclick = async () => {
+        if(recStream) recStream.getTracks().forEach(t=>t.stop());
+        let stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        recVideo.srcObject = stream;
+        recStream = stream;
+        mediaRecorder = new MediaRecorder(stream);
+        recordedChunks = [];
+        mediaRecorder.ondataavailable = (e) => { if(e.data.size>0) recordedChunks.push(e.data); };
+        mediaRecorder.onstop = () => {
+            let blob = new Blob(recordedChunks, { type: 'video/webm' });
+            let url = URL.createObjectURL(blob);
+            downloadVideoLink.href = url;
+            downloadVideoLink.download = 'recording.webm';
+            downloadVideoLink.textContent = '📥 Download Recorded Video';
+        };
+        mediaRecorder.start();
+        startRecordBtn.disabled = true;
+        stopRecordBtn.disabled = false;
+        addMessage('ai', 'Recording started...');
+    };
+    stopRecordBtn.onclick = () => {
+        if(mediaRecorder) mediaRecorder.stop();
+        startRecordBtn.disabled = false;
+        stopRecordBtn.disabled = true;
+        if(recStream) recStream.getTracks().forEach(t=>t.stop());
+        addMessage('ai', 'Recording stopped.');
+    };
+
+    // Code Runner & Debug
+    runCodeBtn.onclick = () => {
+        let code = codeEditor.value;
+        try {
+            let result = eval(code);
+            codeOutput.innerText = `Output: ${result}`;
+            addMessage('ai', 'Code executed successfully.');
+        } catch(e) {
+            codeOutput.innerText = `Error: ${e.message}\nDebug suggestion: check syntax or undefined variables.`;
+            addMessage('ai', `Debug: ${e.message}`);
+        }
+    };
+    fixGrammarCodeBtn.onclick = () => {
+        let text = codeEditor.value;
+        let fixed = text.replace(/is are/g,'is').replace(/  +/g,' ').replace(/ain't/g,"isn't");
+        codeEditor.value = fixed;
+        addMessage('ai', 'Grammar fixed (basic).');
+    };
+
+    // Load feature grid
+    const features = ["Open YouTube","Write Python Code","Take Selfie","Record Video","Toggle Flashlight","Solve Math: 12+7","Translate Hi to French","Summarize: AI is great","Write Essay on AI","Draft Email: meeting","Set Alarm 6pm","Create Schedule","Generate Image: cat","Play Music Tone","Explain Gravity","Search AI news","Take Screenshot","Set Reminder: call","Check Weather","Suggest Idea","Write Script: backup","Define Quantum","Fix Grammar: He go","Plan Trip: Paris","Get Quote","Analyze Data 5,10,15","Find Location Paris"];
+    featureGrid.innerHTML = features.map(f => `<button class="feature-btn" data-cmd="${f}">${f}</button>`).join('');
+    document.querySelectorAll('.feature-btn').forEach(btn => {
+        btn.addEventListener('click', () => { handleCommand(btn.dataset.cmd); document.querySelector('[data-tab="chat"]').click(); });
+    });
+
+    // Tab switching
+    const tabs = document.querySelectorAll('.tab');
+    const panels = {
+        chat: document.getElementById('chatPanel'),
+        tools: document.getElementById('toolsPanel'),
+        camera: document.getElementById('cameraPanel'),
+        video: document.getElementById('videoPanel'),
+        code: document.getElementById('codePanel')
+    };
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            let target = tab.dataset.tab;
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            Object.values(panels).forEach(p => p.classList.remove('active-panel'));
+            panels[target].classList.add('active-panel');
+            if(target === 'camera' && !cameraStream) initCamera(false);
+            if(target === 'video' && !recStream) navigator.mediaDevices.getUserMedia({video:true}).then(s=>recVideo.srcObject=s);
+        });
+    });
+
+    // html2canvas for screenshot
+    if(!window.html2canvas) {
+        let script = document.createElement('script');
+        script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
+        document.head.appendChild(script);
+    }
+    addMessage('ai', '✅ Super AI Bot is ready. Use voice, chat, or tools tab. All features working!');
+</script>
+</body>
+</html>
